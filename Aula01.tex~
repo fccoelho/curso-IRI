@@ -9,10 +9,10 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 
-\title[Coelho: $\langle$ tema da aula$\rangle$]
+\title[Coelho: Introdução]
 {Introdução à Recuperação de Informações\\
 \large \url{https://github.com/fccoelho/curso-IRI}\\[0.5cm]
-IRI 1: $\langle$ tema da aula$\rangle$}
+IRI 1: Introdução}
 
 \author [Coelho F.C. \& Souza R.R.]{ Flávio Codeço Coelho}
 
@@ -31,4 +31,62 @@ IRI 1: $\langle$ tema da aula$\rangle$}
 \tableofcontents
 \end{frame}
 
+\section{Introdução}
+\begin{frame}[fragile]
+\frametitle{Definição}
+\begin{quote}
+ Recuperação de informação pode ser definida como a técnica e a arte de \alert<2,7>{encontrar} conteúdo em \alert<3,7>{grandes coleções} \alert<4,7>{não (ou pouco) estruturadas}
+ de \alert<5,7>{documentos} (em formatos digitais) de forma a satisfazer nossas \alert<6,7>{necessidades informacionais}\footnote{adaptado de Hinrich Schütze}.
+\end{quote} 
+\end{frame}
+
+\section{Estrutura do Curso}
+
+\begin{frame}[fragile]
+\frametitle{Mecânica do Curso}
+\begin{itemize}[<+->]
+ \item Foco na Recuperação de informação em coleções de texto.
+ \item Exercícios exigirão conhecimentos de programação em Python
+ \item Avaliação baseada em mini-projetos (um projeto a cada duas semanas)
+ \item Projetos serão desenvolvidos em duplas rotatórias, ou seja, cada par de alunos só poderá trabalhar em um projeto.
+ \item Dados e infraestrutura computacional serão fornecidos pela escola sempre que necessário
+ 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Contéudo}
+Este curso se restringirá à exploração e aplicação de modelos matemáticos de recuperação de informação
+\begin{itemize}[<+->]
+ \item Modelos Booleanos
+  \begin{itemize}
+    \item Fuzzy
+    \item Modelo Booleano extendido
+  \end{itemize}
+ \item Modelos Vetoriais
+  \begin{itemize}
+    \item Espaços vetoriais
+    \item Indexação semântica latente
+    \item Classificação
+    \item Clusterização
+  \end{itemize}
+ \item Modelos Probabilísticos
+  \begin{itemize}
+    \item Redes Bayesianas
+    \item Graphical Models
+    \item Belief Networks
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Avaliando a Recuperação}
+\begin{frame}[fragile]
+\frametitle{Quão boa é nossa recuperação?}
+Antes de desenvolver qualquer estratégia de recuperação precisamos definir nossa meta e uma métrica de qualidade.
+\begin{itemize}[<+->]
+ \item A meta depende da necessidade informacional
+ \item Existem algumas métricas classicas de qualidade
+\end{itemize}
+
+\end{frame}
 \end{document}
