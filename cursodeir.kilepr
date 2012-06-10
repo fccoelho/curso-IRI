@@ -1,0 +1,37 @@
+[General]
+def_graphic_ext=png
+img_extIsRegExp=false
+img_extensions=.eps .jpg .jpeg .png .pdf .ps .fig .gif
+kileprversion=2
+kileversion=2.1.0
+lastDocument=
+masterDocument=
+name=Curso de IR
+pkg_extIsRegExp=false
+pkg_extensions=.cls .sty .bbx .cbx .lbx
+src_extIsRegExp=false
+src_extensions=.tex .ltx .latex .dtx .ins
+
+[Tools]
+MakeIndex=
+QuickBuild=
+
+[item:Aula01.tex]
+archive=true
+column=54
+encoding=
+highlight=
+line=0
+mode=
+open=true
+order=-1
+
+[item:cursodeir.kilepr]
+archive=true
+column=6881383
+encoding=
+highlight=
+line=0
+mode=
+open=false
+order=-1
