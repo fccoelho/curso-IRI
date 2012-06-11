@@ -4,6 +4,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage[portuguese]{babel}
 \usepackage{url}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\usetikzlibrary{arrows}
 \usepackage{default}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -90,7 +93,36 @@ Antes de desenvolver qualquer estratégia de recuperação precisamos definir no
 \end{frame}
 
 \begin{frame}[fragile]
-\frametitle{Precisão e Alcance}
+\frametitle{Precisão e Revocação(Recall)}
+Seja $R$ um conjunto de documentos relevantes e $|R|$ o número de documentos neste conjunto. Uma requisiçã de informação $I$, gera um conjunto $A$ contendo $|A|$ documentos em resposta. Seja $|R_a|$ o número de documentos da interseção entre $R$ e $A$
+
+Podemos definir revocação como:
+
+\begin{columns}
+ \column{3cm}
+  \begin{equation*}
+  Rev = \frac{|R_a|}{|R|}
+  \end{equation*}
+  \column{3cm}
+  \begin{figure}[h!]
+    \includegraphics[width=3cm]{./recall.pdf}
+    % recall.pdf: 259x216 pixel, 72dpi, 9.14x7.62 cm, bb=0 0 259 216
+  \end{figure}
+\column{4cm}
+  \begin{equation*}
+    Precis\tilde{a}o = \frac{|R_a|}{|A|}
+  \end{equation*} 
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Problemas}
+\begin{itemize}
+ \item Conjunto $|R|$ em situações reais pode ser difícil ou impossível de determinar.
+  \item 
+\end{itemize}
+
 
 \end{frame}
+
 \end{document}

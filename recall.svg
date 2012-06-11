@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="recall.pdf">
+  <defs
+     id="defs4">
+    <pattern
+       inkscape:stockid="Wavy"
+       id="Wavy"
+       height="5.1805778"
+       width="30.066020"
+       patternUnits="userSpaceOnUse"
+       inkscape:collect="always">
+      <path
+         id="path5133"
+         d="M 7.597,0.061 C 5.079,-0.187 2.656,0.302 -0.01,1.788 L -0.01,3.061 C 2.773,1.431 5.173,1.052 7.472,1.280 C 9.770,1.508 11.969,2.361 14.253,3.218 C 18.820,4.931 23.804,6.676 30.066,3.061 L 30.062,1.788 C 23.622,5.497 19.246,3.770 14.691,2.061 C 12.413,1.207 10.115,0.311 7.597,0.061 z "
+         style="fill:black;stroke:none;" />
+    </pattern>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.3501654"
+     inkscape:cx="404.45438"
+     inkscape:cy="524.06747"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:snap-global="true"
+     inkscape:window-width="1280"
+     inkscape:window-height="969"
+     inkscape:window-x="-2"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:0.0151515;stroke:#000000;stroke-opacity:1"
+       id="path2985"
+       sodipodi:cx="408.57144"
+       sodipodi:cy="526.64789"
+       sodipodi:rx="237.14285"
+       sodipodi:ry="134.28572"
+       d="m 645.71429,526.64789 a 237.14285,134.28572 0 1 1 -474.2857,0 237.14285,134.28572 0 1 1 474.2857,0 z"
+       transform="matrix(0.68076411,0,0,1,129.73662,1.6468254)" />
+    <g
+       id="g5226">
+      <path
+         d="m 434.35017,536.49414 a 90.575394,46.522816 0 1 1 -181.15078,0 90.575394,46.522816 0 1 1 181.15078,0 z"
+         sodipodi:ry="46.522816"
+         sodipodi:rx="90.575394"
+         sodipodi:cy="536.49414"
+         sodipodi:cx="343.77478"
+         id="path3766"
+         style="fill:#000000;fill-opacity:0.0151515;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc" />
+      <path
+         d="m 434.35017,536.49414 a 90.575394,46.522816 0 1 1 -181.15078,0 90.575394,46.522816 0 1 1 181.15078,0 z"
+         sodipodi:ry="46.522816"
+         sodipodi:rx="90.575394"
+         sodipodi:cy="536.49414"
+         sodipodi:cx="343.77478"
+         id="path3766-3"
+         style="fill:#000000;fill-opacity:0.0151515;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc"
+         transform="translate(123.51192,-2.0585356)" />
+    </g>
+    <path
+       style="fill:url(#Wavy);stroke:none;fill-opacity:1;opacity:0.64516129"
+       d="m 402.49707,565.98426 c -10.66535,-5.68108 -18.40949,-12.8039 -22.30865,-20.51879 -1.46847,-2.90551 -2.79808,-8.09201 -2.78858,-10.87757 0.0249,-7.30785 3.89533,-14.99076 11.02694,-21.8889 2.73875,-2.6491 10.63497,-8.21335 13.71073,-9.66159 l 1.5552,-0.73227 4.12165,2.20225 c 19.28419,10.3038 28.3173,23.75662 25.10373,37.38648 -1.75357,7.43751 -7.93276,15.37958 -16.74636,21.52395 -3.8778,2.7034 -7.8084,4.96166 -8.62043,4.95273 -0.32255,-0.004 -2.59696,-1.07738 -5.05423,-2.38629 z"
+       id="path5230"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="363.37869"
+       y="430.7038"
+       id="text5251"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5253"
+         x="363.37869"
+         y="430.7038">Coleção</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="302.53189"
+       y="532.39874"
+       id="text5255"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5257"
+         x="302.53189"
+         y="532.39874">|R|</tspan></text>
+    <text
+       xml:space="preserve"
+       x="396.56784"
+       y="538.35577"
+       id="text5259"
+       style="font-size:16px"><tspan
+         sodipodi:role="line"
+         id="tspan5261"
+         x="396.56784"
+         y="538.35577">|R<tspan
+   style="font-size:16px;baseline-shift:sub"
+   id="tspan5271">a</tspan>|</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial Bold"
+       x="472.7327"
+       y="538.35577"
+       id="text5273"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5275"
+         x="472.7327"
+         y="538.35577">|A|</tspan></text>
+  </g>
+</svg>
