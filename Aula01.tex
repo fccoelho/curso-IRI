@@ -92,6 +92,8 @@ Antes de desenvolver qualquer estratégia de recuperação precisamos definir no
 \end{itemize}
 \end{frame}
 
+\subsection{Revocação e Precisão}
+
 \begin{frame}[fragile]
 \frametitle{Precisão e Revocação(Recall)}
 Seja $R$ um conjunto de documentos relevantes e $|R|$ o número de documentos neste conjunto. Uma requisiçã de informação $I$, gera um conjunto $A$ contendo $|A|$ documentos em resposta. Seja $|R_a|$ o número de documentos da interseção entre $R$ e $A$
@@ -115,14 +117,80 @@ Podemos definir revocação como:
 \end{columns}
 \end{frame}
 
+\begin{frame}%[fragile]
+\frametitle{Na Prática}
+Seja $R_q = \{d_3,d_5,d_9,d_{25},d_{39},d_{44},d_{56},d_{71},d_{89},d_{123}\}$ o conjunto de documentos relevantes para uma consulta $q$.
+
+Ordenando o conjunto $A_q$ de respostas a $q$ em ordem decrescente de relevância, temos:
+
+\begin{block}{Resultados ordenados}
+\begin{tabular*}{}{llll}
+\hline
+Ordem & Resultado & Precisão & Revocação\\\hline
+1 & $\mathbf{d_{123}}$ & 100\% & 10\%\\
+2 & $d_{84}$ & 50\% & 10\%\\\hline
+3 & $\mathbf{d_{56}}$ & 66\% & 20\%\\
+4 & $d_6$ & 50\% & 20\%\\
+5 & $d_8$ & 40\% & 20\%\\
+6 & $\mathbf{d_9}$ & 50\% & 30\%\\
+\end{tabular*}
+\end{block}
+\end{frame}
+
 \begin{frame}[fragile]
 \frametitle{Problemas}
 \begin{itemize}
  \item Conjunto $|R|$ em situações reais pode ser difícil ou impossível de determinar.
-  \item 
+  \item Revocação e Precisão são medidas correlacionadas.
+\item visão muito simplista sobre a qualidade da recuperação.
 \end{itemize}
+\end{frame}
 
+\subsection{Outras métricas}
 
+\begin{frame}[fragile]
+\frametitle{Média Harmônica}
+Como precisão e revocação são medidas correlacionadas, podemos buscar integrá-las em uma mesma medida.
+\begin{block}{Média Harmônica}
+\begin{equation*}
+ F(j)=\frac{2}{\frac{1}{r_j}+\frac{1}{P_j}}
+\end{equation*}
+\end{block}
+onde $r_j$ e $P_j$ são a revocação e a precisão do j-ésimo documento rankeado.
+
+$F(j)$ assume valores no intervalo $\left[ 0,1\right]$, sendo $0$ quando nenhum documento relevante for recuperado e 1 quando todos os documentos recuperados forem relevantes.
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Medida E}
+\begin{block}{$E(j)$}
+$$
+ E(j)=1-\frac{1+b^2}{\frac{b^2}{r_j}+\frac{1}{P_j}}
+$$
+\end{block}
+
+Onde $b$ é um parâmetro the indica a importância relativa da revocação e da precisão. Quando $b=1$, $E$ é o complemento da média harmônica. Quando $b<1$, damos mais peso à precisão e quando $b>1$ damos mais peso à revocação.
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Medidas Subjetivas}
+Seja $U$ um subconjunto de $R$ que é do conhecimento do usuário. $|U|$ é o número de documentos neste conjunto. Seja $|R_k|$ o número de documentos da interseção entre $A$ e $U$, e $|R_u|$ o número de documentos pertencentes a $A$ mas não a $U$, i.e., $A-U$
+\begin{block}{Cobertura e Novidade}
+$$
+Cobertura = \frac{|R_k|}{|U|}
+$$
+$$
+Novidade = \frac{|R_u|}{|R_u|+|R_k|}
+$$
+\end{block}
+\end{frame}
+
+\section{Recuperação Booleana}
+
+\begin{frame}[fragile]
+\frametitle{Recuperação Booleana}
+Modelo de recuperação no qual podemod construir consultas na forma de uma expressão booleana, ou seja, os termos de busca são combinados com operadores \emph{AND}, \emph{OR} e \emph{NOT}. este modelo vê cada documento como um simples conjunto de palavras.
 \end{frame}
 
 \end{document}
