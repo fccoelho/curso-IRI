@@ -12,6 +12,12 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 
+% Algumas definições %%%
+\def\term#1{{\sc #1}}   % IR terms in examples not index terms!
+\def\query#1{{\sf #1}}
+\def\oper#1{{\sc #1}} % AND, OR, NOT
+%%%%%%%%%%%%%%%%%%%%%%%%
+
 \title[Coelho: Introdução]
 {Introdução à Recuperação de Informações\\
 \large \url{https://github.com/fccoelho/curso-IRI}\\[0.5cm]
@@ -190,7 +196,163 @@ $$
 
 \begin{frame}[fragile]
 \frametitle{Recuperação Booleana}
-Modelo de recuperação no qual podemod construir consultas na forma de uma expressão booleana, ou seja, os termos de busca são combinados com operadores \emph{AND}, \emph{OR} e \emph{NOT}. este modelo vê cada documento como um simples conjunto de palavras.
+Modelo de recuperação no qual podemos construir consultas na forma de uma expressão booleana, ou seja, os termos de busca são combinados com operadores \oper{and}, \oper{or} e \oper{or}. este modelo vê cada documento como um simples conjunto de palavras.
 \end{frame}
+
+\begin{frame}
+\frametitle{Dados não estruturados de 1650}
+\begin{itemize}[<+->]
+\item Que peças de Shakepeare contêm as palavras
+\term{Brutus}
+\oper{and} 
+\term{Caesar}, mas 
+\oper{not} 
+\term{Calpurnia}?
+\item Poderíamos fazer um  grep em todas as peças de Shakespeare's por 
+\term{Brutus}
+e \term{Caesar}, e então remover as linhas contendo  
+\term{Calpurnia}.
+\item \green{Porque o grep não é a solução?}
+\visible<4->{
+\begin{itemize}
+\item Lento (para grandes coleções)
+\item grep é orientado a linhas, RI é orientada a documentos
+\item ``\oper{not} \term{Calpurnia}'' não é trivial 
+\item Outras operações, tais como por exemplo: encontrar a palavra \term{Romans}
+  proxima da palavra \term{countryman}) não é factivel.
+\item Recuperação Rankeada (melhores documentos) 
+\end{itemize}}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink=15]
+\frametitle{Matriz de incidência Termo-Documento}
+
+\begin{tabular}{@{}lccccccc@{}}
+ & Anthony  & Julius & The  & Hamlet &
+ Othello & Macbeth & \ldots \\
+ & and  & Caesar & Tempest &  &  &  &  \\
+ & Cleopatra \\
+\term{Anthony} &    1 & 1 & 0 & 0 & 0 & 1 & \\
+\term{Brutus} &     1 & 1 & 0 & 1 & 0 & 0 & \\
+\term{Caesar} &     1 & 1 & 0 & 1 & 1 & 1 & \\
+\term{Calpurnia} &  0 & \alert<2>{1} & \alert<3>{0} & 0 & 0 & 0 & \\
+\term{Cleopatra} &  1 & 0 & 0 & 0 & 0 & 0 & \\
+\term{mercy} &      1 & 0 & 1 & 1 & 1 & 1 & \\
+\term{worser} &     1 & 0 & 1 & 1 & 1 & 0 & \\
+\ldots
+\end{tabular}
+
+\alert<2>{
+Elemento é is 1 se o termo ocorre. Exemplo: \term{Calpurnia} ocorre
+em \emph{Julius Caesar}.}
+
+\alert<3>{
+Elemento é 0 se o termo não ocorre. Exemplo: \term{Calpurnia}
+não ocorre em \emph{The tempest}.
+}
+\end{frame}
+
+\begin{frame}
+\frametitle{Vetores de Incidencia }
+\begin{itemize}
+\item Então temos um 0/1 vector para cada termo.
+\item Para responder à consulta
+\term{Brutus}
+\oper{and} 
+\term{Caesar}
+\oper{and} 
+\oper{not} 
+\term{Calpurnia}:
+\visible<2>{\begin{itemize}
+\item Basta tomarmos os vetores para  
+\term{Brutus},
+\term{Caesar}, e
+\term{Calpurnia}
+\item tomar o complemento do vetor para \term{Calpurnia}
+\item fazer um (bitwise) \oper{and} dos os três vetores
+\item 110100 \oper{and} 110111 \oper{and} 101111 = 100100
+\end{itemize}}
+\end{itemize}
+\end{frame}
+
+\subsection{Indices invertidos}
+
+\begin{frame}
+\frametitle{Coleções maiores}
+\begin{itemize}[<+->]
+\item Considere $N= 10^6$ documentos, cada um com cerca de 1000 tokens
+\item $\Rightarrow$ totalizando $10^9$ tokens
+\item Assumindo uma média de 6 bytes por token, incluindo espaços e pontuação
+$\Rightarrow$ tamanho do \emph{corpus} $6 \cdot
+  10^9=$ 6~GB
+\item Assumindo que existam $M=500{,}000$ termos distintos na coleção
+\item (Note a diferença entre termo e token )
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Impossível construir a matriz de incidência}
+\begin{itemize}[<+->]
+\item 
+ $M=500{,}000 \times
+10^6 = $ meio trilhão de 0s e 1s.
+\item Mas esta matriz não tem mais que 1 bilhão de 1s. 
+\begin{itemize}[<+->]
+\item Extremamente esparsa.
+\end{itemize}
+\item Qual seria uma representação melhor?
+\begin{itemize}[<+->]
+\item Registrar apenas os 1s.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Índice Invertido}
+
+Para cada termo $t$, armazenamos uma lista com os documentos em que este ocorre.
+
+\bigskip
+
+\begin{tabular}{|c|c|r|r|r|r|r|r|r|r|r|}
+\cline{1-1}\cline{3-10}
+\term{Brutus} & $\longrightarrow$ & 1 & 2 & 4 & 11 & 31 & 45 & 173 & 174 \\ \cline{1-1}\cline{3-10}
+\multicolumn{8}{l}{} \\ \cline{1-1}\cline{3-11}
+\term{Caesar} & $\longrightarrow$ & 1 & 2 & 4 & 5 & 6 & 16 & 57 & 132 & \ldots \\ \cline{1-1}\cline{3-11}
+\multicolumn{8}{l}{} \\ \cline{1-1}\cline{3-6}
+\term{Calpurnia} & $\longrightarrow$ & 2 & 31 & 54 & 101 \\
+\cline{1-1}\cline{3-6} \multicolumn{8}{l}{}  \\
+% The multicolumn{1}'s below suppress the vertical lines....
+\multicolumn{1}{c}{$\vdots$} \\
+\multicolumn{1}{c}{$\underbrace{\phantom{\mbox{Calpurnia}}}$} &
+\multicolumn{1}{c}{} &
+\multicolumn{9}{c}{$\underbrace{\phantom{\mbox{Calpurnia Calpurnia
+Calpurnia Caesar hath}}}$} \\
+\multicolumn{1}{c}{\alert<2>{\textbf{dicionário}}} &
+\multicolumn{1}{c}{} & \multicolumn{9}{c}{\alert<3>{\textbf{postings}}}
+\end{tabular}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Construindo um Índice Invertido}
+\begin{enumerate}
+\item Junte os documentos a serem indexados:\\[0.2ex]
+\framebox{\weestrut Friends, Romans, countrymen.}
+\framebox{\weestrut So let it be with Caesar} \ldots
+\item Tokenize o texto, transformando cada documento em uma lista de tokens:\\[0.2ex]
+\framebox{\weestrut Friends} \framebox{\weestrut Romans}
+\framebox{\weestrut countrymen} \framebox{\weestrut So} \ldots
+\item Realize um pré-processamento linguístico, produzindo uma lista de termos normalizados, que serão os termos indexados:
+\framebox{\weestrut friend} \framebox{\weestrut roman}
+  \framebox{\weestrut countryman} \framebox{\weestrut so} \ldots
+\item Indexe os documentos em que cada termo ocorre criando um índice invertido, consistindo de um dicionário e postings.
+\end{enumerate}
+\end{frame}
+
+
 
 \end{document}
