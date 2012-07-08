@@ -279,39 +279,41 @@ não ocorre em \emph{The tempest}.
 \subsection{Indices invertidos}
 
 \begin{frame}
-\frametitle{Coleções maiores}
+\frametitle{Bigger collections}
 \begin{itemize}[<+->]
-\item Considere $N= 10^6$ documentos, cada um com cerca de 1000 tokens
-\item $\Rightarrow$ totalizando $10^9$ tokens
-\item Assumindo uma média de 6 bytes por token, incluindo espaços e pontuação
-$\Rightarrow$ tamanho do \emph{corpus} $6 \cdot
+\item Consider $N= 10^6$ documents, each with about 1000
+  tokens
+\item $\Rightarrow$ total of $10^9$ tokens
+\item On average 6 bytes per token, including spaces and punctuation
+$\Rightarrow$ size of document collection is about $6 \cdot
   10^9=$ 6~GB
-\item Assumindo que existam $M=500{,}000$ termos distintos na coleção
-\item (Note a diferença entre termo e token )
+\item Assume there are $M=500{,}000$ distinct terms in the collection
+\item (Notice that we are making a term/token distinction.)
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Impossível construir a matriz de incidência}
+\frametitle{Can't build the incidence matrix}
 \begin{itemize}[<+->]
 \item 
  $M=500{,}000 \times
-10^6 = $ meio trilhão de 0s e 1s.
-\item Mas esta matriz não tem mais que 1 bilhão de 1s. 
+10^6 = $ half a trillion 0s and 1s.
+\item But the matrix has no more than one billion 1s. 
 \begin{itemize}[<+->]
-\item Extremamente esparsa.
+\item Matrix is extremely sparse.
 \end{itemize}
-\item Qual seria uma representação melhor?
+\item What is a better representations?
 \begin{itemize}[<+->]
-\item Registrar apenas os 1s.
+\item We only record the 1s.
 \end{itemize}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Índice Invertido}
+\frametitle{Inverted Index}
 
-Para cada termo $t$, armazenamos uma lista com os documentos em que este ocorre.
+For each term $t$, we store a list of all documents that
+contain $t$.
 
 \bigskip
 
@@ -329,7 +331,7 @@ Para cada termo $t$, armazenamos uma lista com os documentos em que este ocorre.
 \multicolumn{1}{c}{} &
 \multicolumn{9}{c}{$\underbrace{\phantom{\mbox{Calpurnia Calpurnia
 Calpurnia Caesar hath}}}$} \\
-\multicolumn{1}{c}{\alert<2>{\textbf{dicionário}}} &
+\multicolumn{1}{c}{\alert<2>{\textbf{dictionary}}} &
 \multicolumn{1}{c}{} & \multicolumn{9}{c}{\alert<3>{\textbf{postings}}}
 \end{tabular}
 
@@ -338,18 +340,20 @@ Calpurnia Caesar hath}}}$} \\
 
 
 \begin{frame}
-\frametitle{Construindo um Índice Invertido}
+\frametitle{Inverted index construction}
 \begin{enumerate}
-\item Junte os documentos a serem indexados:\\[0.2ex]
+\item Collect the documents to be indexed:\\[0.2ex]
 \framebox{\weestrut Friends, Romans, countrymen.}
 \framebox{\weestrut So let it be with Caesar} \ldots
-\item Tokenize o texto, transformando cada documento em uma lista de tokens:\\[0.2ex]
+\item Tokenize the text, turning each document into a list of tokens:\\[0.2ex]
 \framebox{\weestrut Friends} \framebox{\weestrut Romans}
 \framebox{\weestrut countrymen} \framebox{\weestrut So} \ldots
-\item Realize um pré-processamento linguístico, produzindo uma lista de termos normalizados, que serão os termos indexados:
+\item Do linguistic preprocessing, producing a
+  list of normalized tokens, which are the indexing terms:
 \framebox{\weestrut friend} \framebox{\weestrut roman}
   \framebox{\weestrut countryman} \framebox{\weestrut so} \ldots
-\item Indexe os documentos em que cada termo ocorre criando um índice invertido, consistindo de um dicionário e postings.
+\item Index the documents that each term occurs in by creating an inverted index,
+  consisting of a dictionary and postings.
 \end{enumerate}
 \end{frame}
 
