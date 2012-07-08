@@ -25,3 +25,5 @@
 *.maf
 *.mtc
 *.mtc0
+*.tex~
+*.orig
