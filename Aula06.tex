@@ -5,11 +5,46 @@
 \usepackage[portuguese]{babel}
 \usepackage{url}
 \usepackage{default}
+\usepackage{xcolor}
+\usepackage{newalg}
+\usepackage{pstricks,pst-node,pst-plot,pst-tree}
 
-\title[Coelho: $\langle$ Scores e Modelo vetorial $\rangle$]
-{Scores, Ponderação de Termos e Modelos de Espaço Vetorial\\
+\definecolor{texblue}{rgb}{0, 0, 1} 
+\def\myblue#1{\textcolor{texblue}{#1}}
+\definecolor{texred}{rgb}{1, 0, 0} 
+\def\myred#1{\textcolor{texred}{#1}}
+\definecolor{texgreen}{rgb}{0, 1, 0} 
+\definecolor{texgreen}{rgb}{0.2,0.6,0.2}
+\def\mygreen#1{\textcolor{texgreen}{#1}}
+\def\term#1{{\sc #1}}   % IR terms in examples not index terms!
+\def\query#1{{\sf #1}}
+\def\oper#1{{\sc #1}} % AND, OR, NOT
+%%% Hinrich pstricks stuff
+
+\newcommand{\Xeasquare}[3][]{\fnode[#1]{#2}{#3}}
+\newcommand{\Xeanode}[3][]{\circlenode[#1]{#2}{#3}}
+\newcommand{\XeaFnode}[2]{\circlenode[doubleline=true]{#1}{#2}}
+\newcommand{\Xeatrans}[4][]{\ncline[#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xeaarc}[4][8]{\ncarc[arcangleA=#1, arcangleB=#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xeacurve}[4][]{\nccurve[#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xealoop}[3][angleA=-30, angleB=30]{\nccurve[ncurv=4, #1]{->}{#2}{#2}\Bput*{#3}}
+\newcommand{\Xeastart}[1]{\ncdiag[angleA=180, angleB=180, arm=.5, arrowsize=4pt 4]{->}{#1}{#1}}
+\newcommand{\eaStateName}{d}
+\newcommand{\eanode}[2][]{\Xeanode[#1]{q#2}{${\eaStateName}_{#2}$}}
+\newcommand{\easquare}[2][]{\Xeasquare[#1]{q#2}{${\eaStateName}_{#2}$}}
+\newcommand{\eaFnode}[1]{\XeaFnode{q#1}{${\eaStateName}_{#1}$}}
+\newcommand{\eatrans}[4][]{\Xeatrans[#1]{q#2}{q#3}{#4}}
+\newcommand{\eaarc}[4][8]{\Xeaarc[#1]{q#2}{q#3}{#4}}
+\newcommand{\eacurve}[4][]{\Xeacurve[#1]{q#2}{q#3}{#4}}
+\newcommand{\ealoop}[3][angleA=-30, angleB=30]{\Xealoop[#1]{q#2}{#3}}
+\newcommand{\eastart}[1]{\Xeastart{q#1}}
+\long\def\eateat#1{\ignorespaces}
+
+
+\title[Coelho: Scores e Modelo vetorial\hspace{2em}\insertframenumber/\inserttotalframenumber]
+{Sistemas de Recuperação de Informação\\
 \large \url{https://github.com/fccoelho/curso-IRI}\\[0.5cm]
-IRI 1: $\langle$ tema da aula$\rangle$}
+IRI 6: Scores, Ponderação de Termos e Modelos de Espaço Vetorial}
 
 \author [Coelho F.C. \& Souza R.R.]{ Flávio Codeço Coelho}
 
@@ -26,6 +61,1227 @@ IRI 1: $\langle$ tema da aula$\rangle$}
 \begin{frame}[fragile]
 \frametitle{Sumário da Aula}
 \tableofcontents
+\end{frame}
+
+\section{Recapitulação}
+
+\begin{frame}
+\frametitle{Índice invertido}
+
+Para cada termo $t$, armazenamos uma lista de documentos que contém $t$.
+
+\bigskip
+
+\begin{tabular}{|c|c|r|r|r|r|r|r|r|r|r|}
+\cline{1-1}\cline{3-10}
+\term{Brutus} & $\longrightarrow$ & 1 & 2 & 4 & 11 & 31 & 45 & 173 & 174 \\ \cline{1-1}\cline{3-10}
+\multicolumn{8}{l}{} \\ \cline{1-1}\cline{3-11}
+\term{Caesar} & $\longrightarrow$ & 1 & 2 & 4 & 5 & 6 & 16 & 57 & 132 & \ldots \\ \cline{1-1}\cline{3-11}
+\multicolumn{8}{l}{} \\ \cline{1-1}\cline{3-6}
+\term{Calpurnia} & $\longrightarrow$ & 2 & 31 & 54 & 101 \\
+\cline{1-1}\cline{3-6} \multicolumn{8}{l}{}  \\
+% The multicolumn{1}'s below suppress the vertical lines....
+\multicolumn{1}{c}{$\vdots$} \\
+\multicolumn{1}{c}{$\underbrace{\phantom{\mbox{Calpurnia}}}$} &
+\multicolumn{1}{c}{} &
+\multicolumn{9}{c}{$\underbrace{\phantom{\mbox{Calpurnia Calpurnia
+Calpurnia Caesar hath}}}$} \\
+\multicolumn{1}{c}{\visible<1>{\textbf{dicionário}}} &
+\multicolumn{1}{c}{} & \multicolumn{9}{c}{\visible<1>{\textbf{``postings''}}}
+\end{tabular}
+os\end{frame}
+
+
+\begin{frame}
+\frametitle{Interseção de duas listas de postings}
+
+\begin{tabular}{lll}
+\term{Brutus} & $\longrightarrow$ &
+\alert<2>{\framebox{1}}$\rightarrow$\alert<3,4>{\framebox{2}}$\rightarrow$\alert<5>{\framebox{4}}$\rightarrow$\alert<6>{\framebox{11}}$\rightarrow$\alert<7,8>{\framebox{31}}$\rightarrow$\alert<9>{\framebox{45}}$\rightarrow$\alert<10,11>{\framebox{173}}$\rightarrow$\framebox{174}\\[1ex]
+\term{Calpurnia} & $\longrightarrow$ &
+\alert<2-4>{\framebox{2}}$\rightarrow$\alert<5-8>{\framebox{31}}$\rightarrow$\alert<9-10>{\framebox{54}}$\rightarrow$\alert<11>{\framebox{101}}
+\\[2ex]
+Interseção & $\Longrightarrow$ & \visible<4->{\framebox{2}}\visible<8->{$\rightarrow$\framebox{31}}
+\end{tabular}
+
+
+
+\end{frame}
+
+
+\begin{frame}[shrink=55]
+\frametitle{Construindo um índice invertido: Ordenando postings}
+
+\mbox{
+\begin{tabular}{@{}lr}
+\textbf{termo} & \textbf{\llap{doc}ID} \\
+I & 1 \\
+did & 1 \\
+enact & 1 \\
+julius & 1 \\
+caesar & 1 \\
+I & 1 \\
+was & 1 \\
+killed & 1 \\
+i' & 1 \\
+the & 1 \\
+capitol & 1 \\
+brutus & 1 \\
+killed & 1 \\
+me & 1 \\
+so & 2 \\
+let & 2 \\
+it & 2 \\
+be & 2 \\
+with & 2 \\
+caesar & 2 \\
+the & 2 \\
+noble & 2 \\
+brutus & 2 \\
+hath & 2 \\
+told & 2 \\
+you & 2 \\
+caesar & 2 \\
+was & 2 \\
+ambitious & 2
+\end{tabular}
+%
+{\huge $\Longrightarrow$}
+%
+\begin{tabular}{lr}
+\textbf{term} & \textbf{\llap{doc}ID} \\
+ambitious & 2 \\
+be & 2 \\
+brutus & 1 \\
+brutus & 2 \\
+capitol & 1 \\
+caesar & 1 \\
+caesar & 2 \\
+caesar & 2 \\
+did & 1 \\
+enact & 1 \\
+hath & 1 \\
+I & 1 \\
+I & 1 \\
+i' & 1 \\
+it & 2 \\
+julius & 1 \\
+killed & 1 \\
+killed & 1 \\
+let & 2 \\
+me & 1 \\
+noble & 2 \\
+so & 2 \\
+the & 1 \\
+the & 2 \\
+told & 2 \\
+you & 2 \\
+was & 1 \\
+was & 2 \\
+with & 2
+\end{tabular}
+}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{O Google usa o modelo Booleano?}
+
+
+\begin{itemize}
+\item No Google, a interpretação default de  uma consulta
+  [$w_1$ $w_2$ 
+\ldots $w_n$] é 
+  $w_1$ AND $w_2$ AND 
+\ldots AND $w_n$
+\item Casos onde há ``hits'' mas não contêm um 
+  dos $w_i$:
+\begin{itemize}
+\item Texto âncora
+\item Página contém variante de $w_i$ (morfologia, correção ortográfica, sinônimo)
+\item Consultas longas ($n$ grande)
+\item Expressão booleana gera poucos ``hits''
+\end{itemize}
+
+\item Recuperação Booleana simples vs.\ Rankeamento dos resultados
+
+\begin{itemize}
+\item Recuperação Booleana simples retorna os documentos sem um ordenamento significativo.
+\item O Google (e a maioria das máquinas booleanas bem projetadas) rankeiam os resultados -- os melhores ``hits'' hits (de acordo com alguma estatísticade relevância) aparecem mais altos do que os ``hits'' piores.
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Distinção entre \textit{Tipos} e \textit{Tokens}}
+\begin{itemize}
+\item \myblue{Token} -- Instância de palavra ou termo ocorrendo em um documento
+\item \myblue{Tipo} -- Uma classe de equivalência de tokens
+\item \emph{In June, the dog likes to chase the cat in the barn.}
+\item 12 tokens, 9 tipos
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problemas com  Tokenização}
+\begin{itemize}
+\item Quais são os delimitadores? espaço? apóstrofe? hífen? 
+\item Para cada um destes: às vezes eles delimitam, às vezes não.
+\item Muitas líguas não possuem espaços! (por ex., Chinês)
+\item Não há espaços e palavras compostas em Holandês, Alemão e Sueco
+(\emph{Lebensversicherungsgesellschaftsangestellter})
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Problemas com Classes de Equivalência}
+\begin{itemize}
+\item Um termo é uma classe de equivalencia de tokens.
+\item Como definimos classes de equivalência?
+\item Numeros (3/20/91 vs.\ 20/3/91)
+\item Capitalização
+\item ``Stemming'', Porter stemmer
+\item Análise morfológica : infleccional vs.\ derivacional
+\item Classes de equivalência para múltiplas línguas?
+\begin{itemize}
+\item Morfologias mais complexas: 
+\item Finlandês: um único verbo pode ter 12,000 formas diferentes!!
+\item Acentos, etc.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[shrink=20]
+\frametitle{Índices Posicionais }
+\begin{itemize}
+\item Listas de ``postings'' em um índice \myblue{não posicional}: cada ``posting''
+é apenas um docID
+\item Listas de ``postings'' em um índice \myblue{posicional}: cada ``posting''
+é um docID e \myblue{uma lista de posições}
+\item Exemplo: \emph{``to$_1$ be$_2$ or$_3$ not$_4$ to$_5$ be$_6$''}
+\end{itemize}
+\visible<1>{
+\raggedright
+\term{to}, 993427:\\
+\hspace*{2em}\llap{$\langle$} \alert<1>{1}: $\langle$\alert<1>{7}, \alert<1>{18}, \alert<1>{33, 72, 86, 231}$\rangle$;\\
+\hspace*{2em} \alert<1>{2}: $\langle$1, 17, 74, 222, 255$\rangle$; \\
+\hspace*{2em} \alert<1>{4}: $\langle$\alert<1>{8}, \alert<1>{16}, \alert<1>{190}, \alert<1>{429}, \alert<1>{433}$\rangle$;\\
+\hspace*{2em} 5: $\langle$363, 367$\rangle$; \\
+\hspace*{2em} 7: $\langle$13, 23, 191$\rangle$;
+\ldots $\rangle$ \\[2ex]
+\term{be}, 178239:\\
+\hspace*{2em}\llap{$\langle$}  \alert<1>{1}: $\langle$\alert<1>{17}, \alert<1>{25}$\rangle$;\\
+\hspace*{2em} \alert<1>{4}: $\langle$\alert<1>{17}, \alert<1>{191}, 291, \alert<1>{430}, \alert<1>{434}$\rangle$;\\
+\hspace*{2em} 5: $\langle$14, 19, 101$\rangle$;
+\ldots $\rangle$
+}
+
+\medskip
+
+\visible<1>{Documento 4 não é um resultado!}
+\end{frame}
+
+\begin{frame}
+\frametitle{Índices Posicionais}
+\begin{itemize}
+\item Com um índice posicional, podemos responder
+\begin{itemize}
+\item \myblue{Consultas por frases }
+\item \myblue{Consultas por proximidade}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label=takeaway]
+%\begin{frame}
+\frametitle{Moral da estória de hoje}
+
+\begin{itemize}
+
+\pause[2]
+
+\item \myblue{Rankeamento} dos resultados da busca: por que é importante (em comparação com apresentar um conjunto desordenado de resultados Booleanos)
+
+\pause[3]
+
+\item \myblue{Frequência do termo:} Ingrediente chave do ranqueamento
+
+\pause[4]
+
+\item \myblue{Rankeamento por Tf-idf}: Melhor rankeamento tradicional.
+
+\pause[5]
+
+\item \myblue{Modelo de espaço vetorial}: Um dos mais importantes modelos para recuperação de informação, juntamente com o modelo Booleano e o probabiliístico
+
+\end{itemize}
+
+\end{frame}
+
+\section{Porquê Recuperação Rankeada?}
+
+\begin{frame}[<+->]
+\frametitle{Recuperação Rankeada}
+\pause[2]
+\begin{itemize}
+\item Até agora, nossas consultas têm sido \myblue{Booleanas}.
+\begin{itemize}
+\item Documentos possuem ou não os termos.
+\end{itemize}
+\item \myblue{Bom para usuários especialistas} com um conhecimento preciso de suas necessidades e da coleção.
+\item Também é \myblue{bom para aplicações}: Aplicações podem consumir milhares de resultados.
+\item \myblue{Não é bom para a maioria dos usuários}
+\item A maioria dos usuários não é capaz de escrever consultas booleanas\ldots
+\begin{itemize}
+\item \ldots  ou até são, mas acham que dá muito trabalho.
+\end{itemize}
+\item A maioria dos usuários não quer inspecionar milhares de resultados. 
+\item Isto é particularmente verdadeiro para buscas na Web.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Problema com a busca Booleana: Banquete ou fome}
+\pause[2]
+\begin{itemize}
+\item Consultas Booleanas frequentemente resultam em demasiados ou muito poucos resultados.
+\item Com Consultas Booleanas, é preciso muita habilidade para produzir uma consulta que retorne um número razoável de ``hits''.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Banquete ou Fome: Não é Problema para Busca Rankeada}
+\pause[2]
+\begin{itemize}
+\item Com ranqueamento, grandes conjuntos de resultados não são um problema.
+\item Basta mostrar os 10 melhores
+\item Não sobrecarrega os usuários
+\item Premissa: O rankeamento funciona: \myblue{Resultados mais relevantes são posicionados acima de menos relevantes.}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Escores são a base da Busca Rankeada}
+\pause[2]
+\begin{itemize}
+\item Queremos rankear documentos mais relevamtes acima de documentos menos relevantes.
+\item Como fazer isso para uma dada consulta?
+\item Dê um escore a cada para consulta-documento, no intervalo $[0,1]$.
+\item Este escore mede a qualidade da correspondência consulta-documento.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Escores de correspondência consulta-documento}
+\begin{itemize}
+\item Como computar o escore de um par consulta-documento?
+\item Vamos começar com uma consulta de um termo.
+\item Se o termo da consulta não ocorre no documento: Escore deve ser $0$.
+\item Quanto mais frequente o termo de consulta ocorre no documento, maior deve ser o escore.
+\item Como fazer isso?
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Tentativa 1: coeficiente Jaccard}
+\pause[2]
+\begin{itemize}
+\item  Uma medida comumente utilizada para medir interseção de conjuntos
+\item Sejam $A$ e $B$ dois conjuntos
+\item Coeficiente de Jaccard: \[\mbox{\sc jaccard}(A,B) =\frac{|A \cap B|}{|A \cup
+B|}\] ($A \neq \emptyset$ or $B \neq \emptyset$)
+\item $\mbox{\sc jaccard}(A,A) = 1$
+\item $\mbox{\sc jaccard}(A,B) = 0$ se $A \cap B = 0$
+\item $A$ e $B$ não têm que ter o mesmo tamanho.
+\item Sempre assume valores entre $0$ e $1$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Coeficiente de Jaccard: Exemplo}
+\pause[2]
+\begin{itemize}
+\item Qual o escorede correspondência consulta-documento dado pelo coef. de Jaccard para:
+\begin{itemize}
+\item Consulta: ``ides of March''
+\item Documento ``Caesar died in March''
+\item $\mbox{\sc jaccard}(q,d) = 1/6$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{O que há de errado com Jaccard?}
+\pause[2]
+\begin{itemize}
+\item Não considera a frequência do termo
+\item Termos raros geralmente são mais informativos que termos frequentes. Jaccard não considera esta informação.
+\item Precisamos de uma maneira mais sofisticada de normalizar pelo comprimento do documento.
+\item Mais tarde usaremos
+$|A \cap B|/\sqrt{|A \cup
+B|}$ (cosseno) \ldots
+\item \ldots ao invés de 
+$|A \cap B|/|A \cup
+B|$ (Jaccard) para normalização de comprimento.
+\end{itemize}
+\end{frame}
+
+\section{Frequência do Termo}
+
+\begin{frame}<1-2>[shrink=15,label=binarymatrix]
+\frametitle{Matriz de Incidência Binária}
+
+\begin{tabular}{@{}lccccccc@{}}
+ & Anthony  & Julius & The  & Hamlet &
+ Othello & Macbeth & \ldots \\
+ & and  & Caesar & Tempest &  &  &  &  \\
+ & Cleopatra \\
+\term{Anthony} &    1 & 1 & 0 & \alert<2->{0} & 0 & 1 & \\
+\term{Brutus} &     1 & 1 & 0 & \alert<2->{1} & 0 & 0 & \\
+\term{Caesar} &     1 & 1 & 0 & \alert<2->{1} & 1 & 1 & \\
+\term{Calpurnia} &  0 & 1 & 0 & \alert<2->{0} & 0 & 0 & \\
+\term{Cleopatra} &  1 & 0 & 0 & \alert<2->{0} & 0 & 0 & \\
+\term{mercy} &      1 & 0 & 1 & \alert<2->{1} & 1 & 1 & \\
+\term{worser} &     1 & 0 & 1 & \alert<2->{1} & 1 & 0 & \\
+\ldots
+\end{tabular}
+
+
+\bigskip
+
+Cada documento é representado como um \alert<2->{vetor binário} $\in \{0,1\}^{|V|}$.
+
+
+\end{frame}
+
+\begin{frame}<1-2>[shrink=15,label=countmatrix]
+\frametitle{Matriz de Contagem}
+
+\begin{tabular}{@{}lccccccc@{}}
+ & Anthony  & Julius & The  & Hamlet &
+ Othello & Macbeth & \ldots \\
+ & and  & Caesar & Tempest &  &  &  &  \\
+ & Cleopatra \\
+\term{Anthony} &    157 & 73 & 0 & \alert<2->{0} & 0 & 1 & \\
+\term{Brutus} &     4 & 157 & 0 & \alert<2->{2} & 0 & 0 & \\
+\term{Caesar} &     232 & 227 & 0 & \alert<2->{2} & 1 & 0 & \\
+\term{Calpurnia} &  0 & 10 & 0 & \alert<2->{0} & 0 & 0 & \\
+\term{Cleopatra} &  57 & 0 & 0 & \alert<2->{0} & 0 & 0 & \\
+\term{mercy} &      2 & 0 & 3 & \alert<2->{8} & 5 & 8 & \\
+\term{worser} &     2 & 0 & 1 & \alert<2->{1} & 1 & 5 & \\
+\ldots
+\end{tabular}
+
+\bigskip
+
+Cada Documento é agora representado como um \alert<2->{vetor de contagem} $\in \mathbb{N}^{|V|}$.
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Modelo do Saco de Palavras}
+\pause[2]
+\begin{itemize}
+\item Não consideramos a \myblue{ordem} das palavras em um documento.
+\item \emph{John is quicker than Mary} e \emph{Mary is
+  quicker than John} são representados da mesma forma.
+\item Isto se chama um \myblue{modelo de saco de palavras}.
+\item De certa maneira é um passo atrás: O índice positional era capaz de distinguir estes dois documentos.
+\item Vamos ver como ``recuperar'' a informação positional mais tarde.
+\item Por agora: Modelo do saco de palavras
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Frequência do termo \textbf{tf}}
+\begin{itemize}
+\item TA frequência $\mbox{tf}_{t,d}$ do termo $t$ no documento $d$ é definida como o \myblue{número de vezes que $t$ ocorre em $d$}.
+\item Queremos usar tf ao comput escores de correspondência consulta-documento.
+\item Mas como?
+\item Frequência absoluta dos tesmos não é o que queremos pois:
+\item \alert<9>{Um documento com \myblue{$\mbox{tf}=10$} ocorrências do termo é mais relevante do que um documento com \myblue{$\mbox{tf}=1$} ocorrência do termo.}
+
+\item Mas não 10 vezes mais relevante.
+\item \alert<9>{A Relevância não aumenta em proporção com a frequência do termo.}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Ao invés da frequência absoluta: ponderação pelo $Log$ da frequência}
+\pause[2]
+\begin{itemize}
+\item O peso $log$ da frequência do termo $t$ em $d$ é definido como
+\begin{equation}\label{eqn:logweight}
+    \mbox{w}_{t,d}=\left\{
+%%}
+    \begin{array}{ll}
+      1+\log_{10} \mbox{tf}_{t,d} & \mbox{se } \mbox{tf}_{t,d}>0 \\
+      0 & \mbox{caso contrário} 
+    \end{array}
+   \right. \nonumber
+\end{equation}
+\item $\mbox{tf}_{t,d} \rightarrow \mbox{w}_{t,d}$:\\
+0 $\rightarrow$ 0, 1 $\rightarrow$ 1, 
+2 $\rightarrow$  1.3,
+10 $\rightarrow$  2,
+1000 $\rightarrow$  4, etc.
+\item Escore  de um par consulta-documento: Soma sobre os termos $t$
+  em $q$ e $d$:\\
+$\mbox{escore tf}(q,d) = \sum_{t \in q \cap d} (1 + \log \mbox{tf}_{t,d})$
+\item O escore é 0 se nenhum dos termos de consulta está presente no documento.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercício}
+\begin{itemize}
+\item \mygreen{Compute o escore de correspondência de Jaccard e o peso de correspondência tf para os seguintes pares consulta-documento.}
+\item \ q: [informação sobre carros] d: ``Tudo que você sempre quis saber sobre carros''
+\item \ q: [informação sobre carros] d: ``Informação sobre caminhões,
+  informação sobre aviões, informação sobre trens''
+\item \ q: [carros vermelhos e caminhões vermelhos] d: ``Policiais param carros vermelhos com mais frequência''
+\end{itemize}
+\end{frame}
+
+\section{Ponderação tf-idf}
+
+\begin{frame}[<+->]
+\frametitle{Frequência no documento vs.\ frequência na coleção}
+\pause[2]
+\begin{itemize}
+\item Além da frequência do termo (sua frequência no documento) \ldots
+\item \ldots também queremos usar a frequência do termo \myblue{na coleção} Para rankear e ponderar.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Peso Desejado para Termos Raros}
+\pause[2]
+\begin{itemize}
+\item Termos raros são mais informativos do que termos frequentes.
+\item Considere um termo em uma consulta que é \myblue{raro} na coleção (p.ex.,   \term{aracnocêntrico}).
+\item Um documento contendo este termo tem grandes chances de ser relevante. 
+\item $\rightarrow$ Queremos \myblue{Pesos altos para termos raros} como \term{aracnocêntrico}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Peso desejado para termos frequentes}
+\pause[2]
+\begin{itemize}
+\item Termos frequentes são menos informativos do que termos raros.
+\item Considere um termo na consulta, que é \myblue{frequente} na coleção (p.ex.,   \term{bom}, \term{aumenta}, \term{linha}).
+\item Um documento contendo estes termos tem mais chances de ser relevante do que um documento que não os contenha\ldots
+\item \ldots mas palavras como \term{bom}, \term{aumenta} e
+  \term{linha} Não são indicadores garantidos de relevância.
+\item $\rightarrow$ \myblue{Para termos frequentes} como
+\term{bom}, \term{aumenta}, and \term{linha},
+ queremos pesos positivos \ldots
+\item \ldots mas \myblue{pesos mais baixos} que os de termos raros.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Frequência de Documento}
+\begin{itemize}
+\item  Queremos \myblue{pesos altos para termos raros} como \term{aracnocêntrico}.
+\item  Queremos \myblue{baixos pesos positivos para termos frequentes} como
+\term{bom}, \term{aumenta}, and \term{linha}.
+\pause[2]
+\item Usaremos a \myblue{frequência de documento} para incluir isto no cálculo do escore de correspondência.
+\pause[3]
+\item TA frequência de documento é \myblue{o número de documentos na coleção em que o termo  ocorre}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{\textbf{idf}}
+\pause[2]
+\begin{itemize}
+\item     $\mbox{df}_t$ é a frequência de documento, o número de documentos em que $t$ ocorre.
+\item \myblue{$\mbox{df}_t$} é uma medida inversa da \myblue{informatividade} do termo $t$.
+\item Definimos \myblue{idf} de um termo $t$ da seguinte maneira:
+\begin{equation}\label{eqn:idf}
+    \mbox{idf}_t = \log_{10} {N\over \mbox{df}_t} \nonumber
+\end{equation}
+($N$ é o número de documentos na coleção.)
+\item \myblue{$\mbox{idf}_t$} é uma medida da \myblue{informatividade} do termo.
+\item \ [$\log {N/\mbox{df}_t}$] ao invés de
+  [$N/\mbox{df}_t$] para ``atenuar'' o efeito de idf
+\item Note que usamos a transformação log para ambas as frequências: termo e documento.
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Exemplos de idf}
+\pause[2]
+
+\mygreen{Calcule $\mbox{idf}_t$ usando a fórmula the formula:}
+$\mbox{idf}_t = \log_{10} \frac{1{,}000{,}000}{\mbox{df}_t}$
+
+\vspace{1cm}
+
+\begin{tabular}{||l|r|r||}
+
+\hline
+
+term & $\mbox{df}_t$ & $\mbox{idf}_t$ \\
+
+\hline
+
+calpurnia & 1 & \visible<4->{6} \\
+
+animal & 100 & \visible<4->{4} \\
+
+sunday & 1000 & \visible<4->{3} \\
+
+fly & 10,000 & \visible<4->{2} \\
+
+under & 100,000 & \visible<4->{1} \\
+
+the & 1,000,000 & \visible<4->{0} \\
+
+\hline
+
+\end{tabular}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Efeito do idf no rankeamento}
+\pause[2]
+\begin{itemize}
+\item idf afeta o rankeamento de documentos para \myblue{consultas com pelo menos dois termos}.
+\item Por exemplo, na consulta ``aracnocêntric linha'', a ponderação por idf
+  \myblue{aumenta} o peso relativo de \term{aracnocêntrico} e
+  \myblue{diminui} o peso relativo de \term{linha}.
+\item idf tem \myblue{pouco efeito} no rankeamento \myblue{consultas de um único termo}.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Frequência na Coleção vs.\ frequência de Documento}
+
+\begin{tabular}{@{}lrr@{}}
+palavra & frequência na coleção & frequência de documentos\\\hline
+\term{seguro} & 10440 & 3997\\
+\term{tentar} & 10422 & 8760
+\end{tabular}
+
+\vspace{1cm}
+
+\begin{itemize}
+\item \visible<1->{Frequência na coleção de $t$: número de tokens $t$ na coleção}
+\item \visible<1->{frequência de documentos de $t$: números de documentos em que $t$ ocorre}
+\pause[2]
+\item \visible<1->{\mygreen{Porque estes números?}}
+\pause[3]
+\item \visible<1->{\mygreen{Qual palavra é um melhor termo de busca (e deveria receber o maior peso)?}}
+\pause[4]
+\item \visible<1->{Este exemplo sugere que df (e idf) são melhores para ponderação do que cf (e ``icf'').}
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Ponderação por tf-idf}
+\pause[2]
+\begin{itemize}
+\item A ponderação por tf-idf de um termo é o \myblue{produto de seu tf
+  e seu idf}.
+\item 
+\[
+ w_{t,d} = \alert<4>{(1 +\log \mbox{tf}_{t,d})} \cdot \alert<5>{\log \frac{N}{\mbox{df}_t}}
+\]
+\visible<4>{\item \alert<3>{tf}}
+\visible<5>{\item \alert<4>{idf}}
+\item Melhor esquema conhecido de ponderação em recuperação de informação
+\item Note: O ``-'' em tf-idf is a hyphen, não um sinal de subtração!
+\item Outros nomes: tf.idf, tf x idf
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Resumo: tf-idf}
+\pause[2]
+\begin{itemize}
+\item Atribuir um peso tf-idf para cada termo $t$ em cada documento $d$:
+$ w_{t,d} = (1 +\log \mbox{tf}_{t,d}) \cdot \log \frac{N}{\mbox{df}_t}$
+%\item $N$: total number of documents
+\item O peso tf-idf  \ldots
+\begin{itemize}
+\item \ldots Aumenta com o número de ocorrências dentro de um documento. (frequência do termo)
+\item \ldots Aumenta com a raridade do termo na coleção. (frequência inversa de documentos)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}\frametitle{Exercício: Frequência de Termo, Coleção and Documento}
+
+\bigskip
+
+\begin{tabular}{@{}llp{5cm}@{}}
+Grandeza & Símbolo & Definição\\\hline
+frequência do termo & $\mbox{tf}_{t,d}$ & número de ocorrências de $t$ in $d$\\
+frequência de documentos  & $\mbox{df}_t$ & número de documentos na coleção em que $t$
+ocorre\\
+frequência na coleção & $\mbox{cf}_t$ & número total de ocorrências de $t$ na coleção
+\end{tabular}
+
+\vspace{1cm}
+
+\begin{itemize}
+\item \visible<1>{\mygreen{Relação entre df e cf?}}
+\item \visible<1>{\mygreen{Relação entre tf e cf?}}
+\item \visible<1>{\mygreen{Relação entre tf e df?}}
+\end{itemize}
+
+\end{frame}
+
+
+\section{O Modelo de Espaço Vetorial}
+
+\againframe<3>[shrink=15]{binarymatrix}
+
+\againframe<3>[shrink=15]{countmatrix}
+
+\begin{frame}[shrink=15]
+\frametitle{Matriz Binária $\rightarrow$ Contagem $\rightarrow$ Pesos}
+
+\begin{tabular}{@{}lccccccc@{}}
+ & Anthony  & Julius & The  & Hamlet &
+ Othello & Macbeth & \ldots \\
+ & and  & Caesar & Tempest &  &  &  &  \\
+ & Cleopatra \\
+\term{Anthony} &    5.25 & 3.18 & 0.0 & \alert<2->{0.0} & 0.0 & 0.35 & \\
+\term{Brutus} &     1.21 & 6.10 & 0.0 & \alert<2->{1.0} & 0.0 & 0.0 & \\
+\term{Caesar} &     8.59 & 2.54 & 0.0 & \alert<2->{1.51} & 0.25 & 0.0 & \\
+\term{Calpurnia} &  0.0 & 1.54 & 0.0 & \alert<2->{0.0} & 0.0 & 0.0 & \\
+\term{Cleopatra} &  2.85 & 0.0 & 0.0 & \alert<2->{0.0} & 0.0 & 0.0 & \\
+\term{mercy} &      1.51 & 0.0 & 1.90 & \alert<2->{0.12} & 5.25 & 0.88 & \\
+\term{worser} &     1.37 & 0.0 & 0.11 & \alert<2->{4.15} & 0.25 & 1.95 & \\
+\ldots
+\end{tabular}
+
+\bigskip
+
+Cada documento agora é representado como um \alert<2->{vetor real} de pesos
+tf-idf $\in \mathbb{R}^{|V|}$.
+
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Documentos como vetores}
+\pause[2]
+\begin{itemize}
+\item Cada documento é agora representado como um vetor real de pesos tf-idf  $\in \mathbb{R}^{|V|}$.
+\item Então agora temos um espaço vetorial $|V|$-dimensional.
+\item Os termos são os \myblue{eixos} do espaço.
+\item os documentos são \myblue{pontos} ou \myblue{vetores} neste espaço.
+\item Dimensionalidade muito alta: dezenas de milhões de dimensões quando aplica-se isto a máquinas de busca para a web
+\item Cada vetor é extremamente esparso  - a maioria dos valores são zero.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Consultas como vetores}
+\pause[2]
+\begin{itemize}
+\item Idéia chave 1: faça os mesmo para as consultas: represente-as como vetores neste espaço multi-dimensional
+\item Idéia chave 2: Rankeie os documentos de acordo com sua proximidade à consulta.
+\item proximidade= similaridade
+\item proximidade $\approx$ distância negativa
+\item Lembre-se: fazemos isso para nos afastar do tudo-ou-nada do modelo Booleano.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Como formalizamos similaridade em um espaço vetorial?}
+\pause[2]
+\begin{itemize}
+\item Primeira tentativa: distância (negativa) entre dois pontos
+\item ( = distância entre as extremidades de dois vetores)
+\item Distância Euclidiana?
+\item Distância Euclidiana é uma má ideia \ldots
+\item \ldots pois a distância Euclidiana é \myblue{grande} for vetores
+  \myblue{de comprimentos diferentes}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Porquê distância é uma má idéia}
+\pause[2]
+
+
+\psset{unit=4cm}
+\begin{pspicture}(0,-0.05)(1.6,1.25)
+\psgrid(0,0)(1,1)
+\psline{->}(0,0)(1.1,0)
+\rput(1.3,0){\term{rich}}
+\psline{->}(0,0)(0,1.1)
+\rput(0,1.2){\term{poor}}
+\psline[linewidth=1.2pt]{->}(0,0)(0.71,0.71)\put(0.42,0.78){$q\!\!:\!
+  \mbox{\em [rich poor]}$}
+\psline{->}(0,0)(0.13,0.99)\uput[r](0.00,1.09){$d_1\!\!:\!
+  \mbox{\em Ranks of starving poets swell}$}
+\psline{->}(0,0)(1.6,1.2)\uput[ur](1.6,1.1){$d_2\!\!:\!
+  \mbox{Rich poor gap grows}$}
+\psline{->}(0,0)(0.99,0.13)\uput[r](0.99,0.13){$d_3\!\!:\!
+  \mbox{\em Record baseball salaries in 2010}$}
+\end{pspicture}
+
+\bigskip
+
+\visible<2->{A distância Euclidiana de  $\vec{q}$ e
+  $\vec{d}_2$ é grande ainda que a distribuição de termos na consulta $q$ e a distribuição de termos no documento $d_2$ sejam muito similares.}
+
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Usar ângulos ao invés de distâncias}
+\pause[2]
+\begin{itemize}
+\item Rankear documentos de acordo com o ângulo formado com a consulta
+\item Imagine: pegue um documento $d$ e adicione-o ao final dele mesmo. chame este novo documento $d'$. $d'$ é duas vezes mais longo que $d$.
+\item ``Semanticamente'' $d$ e $d'$ têm o mesmo conteúdo.
+\item O ângulo entre os dois documentos é 0, correspondendo  a máxima similaridade\ldots
+\item \ldots Mas sua distância Euclidiana é bem grande.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{de Ângulos a Cossenos}
+\pause[2]
+\begin{itemize}
+\item O dois conceitos a seguir são equivalentes.
+\begin{itemize}
+\item Rankear documentos de acordo com o \myblue{ângulo} entre consulta e documento em ordem  decrescente
+\item Rankear documentos de acordo com o \myblue{cosseno}(query,document) em ordem crescente
+\end{itemize}
+\item O cosseno é uma função monotonicamente decrescente do ângulo no intervalo  $[0^\circ,180^\circ]$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Normalização do comprimento}
+\pause[2]
+\begin{itemize}
+\item Como calculamos o cosseno?
+\item Um vetor poder ser normalizado com respeito ao seu comprimento, por meio da divisão de cada um de seus componentes por seu comprimento -- aqui usamos a norma $L_2$
+  norm: $||x||_2 = \sqrt{\sum_i x_i^2}$
+\item Isto mapeia os vetores na esfera unitária \ldots
+\item \ldots uma vez que após a normalização: 
+  $||x||_2 = \sqrt{\sum_i x_i^2} = 1.0$
+\item Por conseguinte, documentos longos e curto têm pesos com a mesma ordem de magnitude.
+\item Efeito nos documentos $d$ and $d'$ ($d$ somado a si mesmo) do slide anterior: eles têm   \myblue{vetores idênticos} após normalização do comprimento.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Similaridade por Cosseno entre consulta e documento}
+\pause[2]
+\bigskip
+
+\[
+\cos (\vec{q},\vec{d}) = 
+\mbox{{\sc sim}} (\vec{q},\vec{d}) = 
+\frac{\vec{q} \cdot \vec{d}}
+{|\vec{q}| | \vec{d}|}
+=\frac
+{\sum_{i=1}^{|V|} q_i d_i}
+{
+\sqrt{\sum_{i=1}^{|V|} q_i^2  }
+\sqrt{\sum_{i=1}^{|V|} d_i^2  }
+}
+\]
+
+\bigskip
+
+\begin{itemize}
+\item $q_i$ é o peso tf-idf do termo $i$ na consulta.
+\item $d_i$ é o peso tf-idf do termo $i$ no documento.
+\item $|\vec{q}|$ e $|\vec{d}|$ são os comprimentos de 
+$\vec{q}$ and $\vec{d}$.
+
+\item Isto é a \myblue{similaridade por cosseno}  entre  $\vec{q}$ e $\vec{d}$ \ldots
+\ldots ou, o cosseno do ângulo entre $\vec{q}$ e $\vec{d}$.
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Cosseno para vetores normalizados}
+\begin{itemize}
+\item Para vetores normalizados, o cosseno é equivalente ao produto interno ou produto escalar .
+\item $\mbox{cos} (\vec{q},\vec{d}) = \vec{q} \cdot \vec{d} = \sum_i q_{i}
+  \cdot d_{i}$ 
+\begin{itemize}
+\item (se $\vec{q}$ e $\vec{d}$ normalizados no comprimento).
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Similaridade por Cosseno Ilustrada}
+\pause[2]
+
+\psset{unit=4cm}
+\begin{pspicture}(-0.2,-0.1)(1.5,1.2)
+\psgrid[gridwidth=0.6pt,subgridwidth=0.3pt](0,0)(1,1)
+\psline{->}(0,0)(1.1,0)
+\rput(1.5,0){\term{rich}}
+\psline{->}(0,0)(0,1.1)
+\rput(0,1.15){\term{poor}}
+\psline[linewidth=1.3pt,arrowscale=1.3]{->}(0,0)(0.669,0.743)\uput[u](0.669,0.743){$\vec{v}(q)$}
+\psline[arrowscale=1.3]{->}(0,0)(0.259,0.966)\uput[u](0.259,0.966){$\vec{v}(d_1)$}
+\psline[arrowscale=1.3]{->}(0,0)(0.766,0.643)\uput[ur](0.766,0.643){$\vec{v}(d_2)$}
+\psline[arrowscale=1.3]{->}(0,0)(0.99,0.13)\uput[r](0.99,0.13){$\vec{v}(d_3)$}
+\psarc[linestyle=dashed,linewidth=0.3pt](0,0){1}{0}{90}
+\psarc[linewidth=0.6pt](0,0){0.5}{40}{75}\uput[ur](0.269,0.422){$\theta$}
+\end{pspicture}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Cosseno: Exemplo}
+
+\bigskip
+
+\begin{columns}[t]
+
+\begin{column}{3cm}
+Quão similares são estas novelas?
+
+\smallskip
+
+SaS: Sense and Sensibility
+
+\smallskip
+
+PaP: Pride and Prejudice
+
+\smallskip
+
+WH: Wuthering Heights
+
+\end{column}
+
+\begin{column}{6cm}
+
+\visible<2>{\begin{tabular}{lrrr}
+\multicolumn{4}{c}{frequências de termos (contagens)}\\
+\multicolumn{4}{c}{}\\
+\hline
+termo & SaS & PaP & WH \\
+\hline
+\term{affection} & 115 & 58 & 20 \\
+\term{jealous} & 10 & 7 & 11 \\
+\term{gossip} & 2 & 0 & 6 \\
+\term{wuthering} & 0 & 0 & 38 \\
+\hline
+\end{tabular}}
+\end{column}
+
+
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Cosseno: Exemplo}
+
+
+\bigskip
+
+\begin{columns}[t]
+\begin{column}{6cm}
+
+\visible<1->{\begin{tabular}{lrrr}
+\multicolumn{4}{c}{frequências de termos (contagens)}\\
+\multicolumn{4}{c}{}\\
+\hline
+term & SaS & PaP & WH \\
+\hline
+\term{affection} & 115 & 58 & 20 \\
+\term{jealous} & 10 & 7 & 11 \\
+\term{gossip} & 2 & 0 & 6 \\
+\term{wuthering} & 0 & 0 & 38 \\
+\hline
+\end{tabular}}
+
+
+\end{column}
+\begin{column}{6cm}
+
+\visible<2->{
+\begin{tabular}{llll}
+\multicolumn{4}{c}{log da frequência}\\
+\multicolumn{4}{c}{}\\
+\hline
+term & SaS & PaP & WH \\
+\hline
+\term{affection} & 3.06 & 2.76 & 2.30 \\
+\term{jealous} & 2.0 & 1.85 & 2.04 \\
+\term{gossip} & 1.30 & 0 & 1.78 \\
+\term{wuthering} & 0 & 0 & 2.58 \\
+\hline
+\end{tabular}
+}
+
+\end{column}
+\begin{column}{1cm}
+\end{column}
+\end{columns}
+
+\bigskip
+
+\visible<3->{(Para simplificar este exemplo, não faremos ponderação por idf .)}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Cosseno: Exemplo}
+
+\bigskip
+
+\begin{columns}[t]
+\begin{column}{6cm}
+
+\begin{tabular}{llll}
+\multicolumn{4}{c}{log da frequência}\\
+\multicolumn{4}{c}{}\\
+\hline
+term & SaS & PaP & WH \\
+\hline
+\term{affection} & 3.06 & 2.76 & 2.30 \\
+\term{jealous} & 2.0 & 1.85 & 2.04 \\
+\term{gossip} & 1.30 & 0 & 1.78 \\
+\term{wuthering} & 0 & 0 & 2.58 \\
+\hline
+\end{tabular}
+
+\end{column}
+\begin{column}{6cm}
+
+
+\visible<2->{\begin{tabular}{llll}
+\multicolumn{4}{c}{log da frequência}\\
+\multicolumn{4}{c}{\& normalização por cosseno}\\
+\hline
+term & SaS & PaP & WH \\
+\hline
+\term{affection} & 0.789 & 0.832 & 0.524 \\
+\term{jealous} & 0.515 & 0.555 & 0.465 \\
+\term{gossip} & 0.335 & 0.0 & 0.405 \\
+\term{wuthering} & 0.0 & 0.0 & 0.588 \\
+\hline
+\end{tabular}
+}
+\end{column}
+\begin{column}{1cm}
+\end{column}
+\end{columns}
+
+\bigskip
+
+\begin{itemize}
+\item \visible<3->{$\cos(\mbox{SaS,PaP}) \approx
+0.789*0.832+0.515*0.555+0.335*0.0+0.0*0.0 \approx 0.94$.}
+\item \visible<4->{$\cos(\mbox{SaS,WH}) \approx 0.79$}
+\item \visible<5->{$\cos(\mbox{PaP,WH}) \approx 0.69$}
+\item \visible<6->{\mygreen{Porquê temos $\cos(\mbox{SaS,PaP})
+%%<
+ > \cos(\mbox{SAS,WH})$?}}
+\end{itemize}
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Calculando o escore cosseno}
+\pause[2]
+
+\begin{algorithm}{EscoreCosseno}{q}
+float \ Escores[N] = 0\\
+float \ Comprimento[N]\\
+\begin{FOR}{\EACH \mbox{ termo de busca }t}
+\mbox{calcule }\mbox{w}_{t,q} \mbox{ e recupere a lista de postings para }t\\
+    \begin{FOR}{\EACH \mbox{ par} (d,\mbox{tf}_{t,d})\mbox{ na lista de }}
+    Escores[d] += \mbox{w}_{t,d}\times \mbox{w}_{t,q}
+    \end{FOR}
+\end{FOR} \\
+\null\mbox{Leia o }Comprimento \mbox{da matriz}\\
+\begin{FOR}{\EACH d}
+Escores[d] = Escores[d] / Comprimento[d]
+\end{FOR} \\
+\RETURN{\mbox{Top }K \mbox{ componentes de }Escores[]}
+\end{algorithm}
+
+
+\end{frame}
+
+
+
+
+
+\begin{frame}[shrink=35]
+\frametitle{Componentes da ponderação tf-idf}
+
+\bigskip
+
+\begin{tabular}{|ll|ll|lp{3cm}|}
+\hline
+  \multicolumn{2}{|c|}{Frequência do termo}
+& \multicolumn{2}{c|}{Frequência de documentos}
+& \multicolumn{2}{c|}{Normalização}\\ \hline
+\alert<3>{n (natural)} & \alert<3>{$\mbox{tf}_{t,d}$} & \alert<3>{n (no)} & \alert<3>{$1$} & \alert<3>{n (none)}
+& \alert<3>{1}\\[1ex]
+\alert<2>{l (logarithm)} & \alert<2>{$1 + \log (\mbox{tf}_{t,d})$} & \alert<2>{t (idf)} & \alert<2>{$\log
+\frac{N}{\mbox{df}_t}$} & \alert<2>{c (cosine)} & \alert<2>{$\frac{1}{\sqrt{w_1^2 + w_2^2 + \ldots + w_M^2}}$}\\[1ex]
+a (augmented) & $0.5 + \frac{0.5 \times \mbox{tf}_{t,d}}{\max_t
+  (\mbox{tf}_{t,d})}$ &
+p (prob idf) & $\max\{0,\log \frac{N - \docf_t}{\docf_t}\}$ &
+u (\vtop{\hbox{pivoted}\hbox{unique)}} & $1/u$  \\[1.5ex]
+b (boolean) & $\biggl\lbrace \begin{array}{@{}ll}1 &
+  \mbox{if $\termf_{t,d}
+%%<
+ > 0$}
+\\ 0 & \mbox{otherwise} \end{array} \biggr.$ & & & b (byte
+  size) & $1/\mbox{\emph{CharLength}}^{\alpha}$, $\alpha < 
+%%>
+1$ \\[1ex]
+L (log ave) & $\frac{1 + \log(\termf_{t,d})}{1 + \log(\ave_{t\in d}(\termf_{t,d}))}$ & & &  &
+\\ \hline
+\end{tabular}
+
+\bigskip
+
+\visible<2>{Melhor combinação conhecida de opções de ponderação}
+
+\bigskip
+
+\visible<3>{Default: sem ponderação}
+
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Exemplo: tf-idf}
+\pause[2]
+\begin{itemize}
+\item Frequentemente usamos \myblue{ponderações diferentes } para consultas e documentos.
+\item Notação: ddd.qqq
+\item Exemplo: lnc.ltn
+\item documento: tf logarítmica, sem ponderação por df, normalização por cosseno
+\item consulta: tf logarítmica, idf, sem normalização
+\item \mygreen{É ruim não ponderar por idf o documento?}
+\item Consulta: ``best car insurance'' 
+\item Documento:  ``car insurance auto insurance''
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[shrink=30]
+\frametitle{Exemplo de tf-idf: lnc.ltn}
+
+Query: ``best car insurance''. Document:  ``car insurance auto insurance''.
+
+\medskip
+
+\begin{tabular}{l|lllll|llll|l}
+palavra      & \multicolumn{5}{c|}{consulta}&\multicolumn{4}{c|}{documento}&produto\\
+          & tf-raw & tf-wght & df    & idf & weight    &
+          tf-raw & tf-wght  & weight   & n'lized\\\hline
+auto      &\visible<2->{ 0  }&\visible<4->{ 0  }&\visible<6->{ 5000  }&\visible<7->{ 2.3 }&\visible<8->{ 0    }&\visible<3->{ 1  }&\visible<5->{ 1   }&\visible<10->{ 1   }&\visible<11->{ 0.52}&\visible<12->{0}\\
+best      &\visible<2->{ 1  }&\visible<4->{ 1  }&\visible<6->{ 50000 }&\visible<7->{ 1.3 }&\visible<8->{ 1.3  }&\visible<3->{ 0  }&\visible<5->{ 0   }&\visible<10->{ 0   }&\visible<11->{ 0   }&\visible<12->{0}\\
+car       &\visible<2->{ 1  }&\visible<4->{ 1  }&\visible<6->{ 10000 }&\visible<7->{ 2.0 }&\visible<8->{ 2.0  }&\visible<3->{ 1  }&\visible<5->{ 1   }&\visible<10->{ 1   }&\visible<11->{ 0.52}&\visible<12->{1.04}\\
+insurance &\visible<2->{ 1  }&\visible<4->{ 1  }&\visible<6->{ 1000  }&\visible<7->{ 3.0 }&\visible<8->{ 3.0  }&\visible<3->{ 2  }&\visible<5->{ 1.3 }&\visible<10->{ 1.3 }&\visible<11->{ 0.68}&\visible<12->{2.04}
+\end{tabular}
+
+\bigskip
+
+Chave para as colunas: \alert<2,3>{tf-raw: frequência absoluta do termo, sem ponderação}, \alert<4,5>{tf-wght: tf ponderada logaritmicamente}, \alert<6>{df: frequência de documentos},
+  \alert<7>{idf: frequência inversa de documentos},
+  \alert<8,9,10>{weight: O peso final do termo na consulta ou documento}, \alert<11>{n'lized: Peso de documentos após normalização por cosseno}, \alert<12>{product: O produto da ponderação final de consulta e documento}
+
+\medskip
+
+\visible<11>{
+$\sqrt{1^2 + 0^2 + 1^2 + 1.3^2} \approx 1.92$\\
+$1/1.92 \approx 0.52$\\
+$1.3/1.92 \approx 0.68$
+}
+
+\medskip
+
+
+\visible<13->{Escore final de similaridade entre consulta e documento: $\sum_i w_{qi} \cdot w_{di} = 0+0+1.04+2.04 = 3.08$}
+
+\medskip
+
+\visible<14->{\mygreen{Perguntas?}}
+
+\end{frame}
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Resumo: Recuparação rankeada no modelo de espaço vetorial}
+\pause[2]
+\begin{itemize}
+\item Represente a consulta como um vetor ponderado de tf-idf 
+\item Represente cada documento como um vetor ponderado de tf-idf
+\item Calcule a similaridade por cosseno entre o vetor da consulta e os vetores de cada documento
+\item Rankeie os documentos com respeito à consulta
+\item Retorne os top $K$ (p.ex., $K=10$) ao usuário
+\end{itemize}
+\end{frame}
+
+\againframe<6>{takeaway}
+
+\begin{frame}
+\frametitle{Material}
+\begin{itemize}
+\item Capítulos 6 and 7 do livro
+\item Mais materiais em \url{http://ifnlp.org/ir}
+\begin{itemize}
+\item Vector space for dummies
+\item
+Exploring the similarity space (Moffat and Zobel, 2005)
+\item Okapi BM25 (a state-of-the-art weighting method, 11.4.3 of IIR)
+\end{itemize}
+\end{itemize}
 \end{frame}
 
 \end{document}
