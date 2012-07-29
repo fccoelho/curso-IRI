@@ -1,0 +1,194 @@
+ 
+\documentclass[compress]{beamer}
+\usetheme{Warsaw}
+\usecolortheme{crane}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{url}
+\usepackage{default}
+\usepackage{xcolor}
+\usepackage{newalg}
+\usepackage{pstricks,pst-node,pst-plot,pst-tree}
+
+\definecolor{texblue}{rgb}{0, 0, 1} 
+\def\myblue#1{\textcolor{texblue}{#1}}
+\definecolor{texred}{rgb}{1, 0, 0} 
+\def\myred#1{\textcolor{texred}{#1}}
+\definecolor{texgreen}{rgb}{0, 1, 0} 
+\definecolor{texgreen}{rgb}{0.2,0.6,0.2}
+\def\mygreen#1{\textcolor{texgreen}{#1}}
+\def\term#1{{\sc #1}}   % IR terms in examples not index terms!
+\def\query#1{{\sf #1}}
+\def\oper#1{{\sc #1}} % AND, OR, NOT
+%%% Hinrich pstricks stuff
+
+\newcommand{\Xeasquare}[3][]{\fnode[#1]{#2}{#3}}
+\newcommand{\Xeanode}[3][]{\circlenode[#1]{#2}{#3}}
+\newcommand{\XeaFnode}[2]{\circlenode[doubleline=true]{#1}{#2}}
+\newcommand{\Xeatrans}[4][]{\ncline[#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xeaarc}[4][8]{\ncarc[arcangleA=#1, arcangleB=#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xeacurve}[4][]{\nccurve[#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xealoop}[3][angleA=-30, angleB=30]{\nccurve[ncurv=4, #1]{->}{#2}{#2}\Bput*{#3}}
+\newcommand{\Xeastart}[1]{\ncdiag[angleA=180, angleB=180, arm=.5, arrowsize=4pt 4]{->}{#1}{#1}}
+\newcommand{\eaStateName}{d}
+\newcommand{\eanode}[2][]{\Xeanode[#1]{q#2}{${\eaStateName}_{#2}$}}
+\newcommand{\easquare}[2][]{\Xeasquare[#1]{q#2}{${\eaStateName}_{#2}$}}
+\newcommand{\eaFnode}[1]{\XeaFnode{q#1}{${\eaStateName}_{#1}$}}
+\newcommand{\eatrans}[4][]{\Xeatrans[#1]{q#2}{q#3}{#4}}
+\newcommand{\eaarc}[4][8]{\Xeaarc[#1]{q#2}{q#3}{#4}}
+\newcommand{\eacurve}[4][]{\Xeacurve[#1]{q#2}{q#3}{#4}}
+\newcommand{\ealoop}[3][angleA=-30, angleB=30]{\Xealoop[#1]{q#2}{#3}}
+\newcommand{\eastart}[1]{\Xeastart{q#1}}
+\long\def\eateat#1{\ignorespaces}
+
+
+\title[Recuperação Probabilística\hspace{2em}\insertframenumber/\inserttotalframenumber]
+{Sistemas de Recuperação de Informação\\
+\large \url{https://github.com/fccoelho/curso-IRI}\\[0.5cm]
+IRI 11: Recuperação de Informação Probabilística}
+
+\author [Coelho F.C. \& Souza R.R.]{ Flávio Codeço Coelho}
+
+\institute [EMAp, FGV]{Escola de Matemática Aplicada,   Fundação Getúlio Vargas}
+\date
+
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Sumário da Aula}
+\tableofcontents
+\end{frame}
+
+\section{Recap}
+
+\begin{frame}
+\frametitle{Relevance feedback: Basic idea}
+
+\begin{itemize}
+\item The user  issues a (short, simple) query.
+\item The search engine returns a set of documents.
+\item User marks some docs as relevant, some as nonrelevant.
+\item Search engine computes a new representation of
+  the information need -- should be better than the initial query.
+\item Search engine runs new query and returns new
+ results.
+\item New results have (hopefully) better recall.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Rocchio illustrated}
+
+
+\psset{unit=0.175cm}
+
+
+\begin{pspicture}(5,5)(45,36)
+\psaxes[labels=none,ticks=none,arrowscale=3,linewidth=0.02cm]{->}(15,10)(45,36)
+
+%\showgrid
+%\psgrid[subgriddiv=0](0,2)(55,36)
+
+\pscircle( 30 ,11  ){0.428}
+\pscircle( 30 ,13  ){0.428}
+\pscircle( 30 ,15  ){0.428}
+\pscircle( 30 ,17  ){0.428}
+\pscircle( 30 ,23  ){0.428}
+\pscircle( 30 ,25  ){0.428}
+\pscircle( 30 ,27  ){0.428}
+\pscircle( 30 ,29  ){0.428}
+\pscircle( 33 ,20  ){0.428}
+\pscircle( 27 ,20  ){0.428}
+
+\rput( 40 ,25  ){{ x}}
+\rput( 40 ,15  ){{ x}}
+\rput( 40 ,23  ){{ x}}
+\rput( 40 ,17  ){{ x}}
+\rput( 43 ,20  ){{ x}}
+\rput( 37 ,20  ){{ x}}
+
+%\pscircle*(40,20){0.711}
+%\pscircle*(30,20){0.711}
+
+\visible<2,3,5-9>{
+\psline{->,arrowscale=2,linewidth=0.03cm}(15,10)(30,20)
+\rput(21,16){\small $\vec{\mu}_{R}$}
+}
+
+\visible<4,5-9>{
+\psline{->,arrowscale=2,linewidth=0.03cm}(15,10)(40,20)
+\rput(25,12){\small $\vec{\mu}_{NR}$}
+}
+
+\visible<6-9>{
+\psline{->,arrowscale=2,linewidth=0.03cm}(40,20)(30,20)
+\rput(35,23){\small $\vec{\mu}_{R}-\vec{\mu}_{NR}$}
+}
+\visible<7-9>{\psline{->,arrowscale=2,linewidth=0.03cm}(30,20)(20,20)}
+\visible<8-10>{
+\psline{->,arrowscale=2,linewidth=0.03cm}(15,10)(20,20)
+\rput(20,22){\small $\vec{q}_{opt}$}
+}
+
+\end{pspicture}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Types of query expansion}
+%\pause[2]
+\begin{itemize}
+\item Manual thesaurus (maintained by editors, e.g., PubMed)
+\item Automatically derived thesaurus (e.g., based on
+  co-occurrence statistics)
+\item Query-equivalence based on query log mining (common on
+  the web as in the ``palm'' example)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Query expansion at search engines}
+%\pause[2]
+\begin{itemize}
+\item Main source of query expansion at search engines:
+  query logs
+\item Example 1: After issuing the query [herbs], users
+  frequently search for [herbal remedies].
+\begin{itemize}
+\item $\rightarrow$ 
+``herbal remedies'' is potential expansion of ``herb''.
+\end{itemize}
+
+\item Example 2: Users searching for [flower pix]
+  frequently click on the URL \myblue{photobucket.com/flower}. 
+Users searching for [flower clipart]
+  frequently click on the \myblue{same URL}.
+\begin{itemize}
+\item $\rightarrow$ 
+``flower clipart'' and ``flower pix'' are potential
+  expansions of each other.
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[label=takeaway]
+
+\frametitle{Take-away today}
+\begin{itemize}
+\item Probabilistically grounded approach to IR 
+\item Probability Ranking Principle
+\item Models: BIM, BM25
+\item Assumptions these models make
+\end{itemize}
+\end{frame}
+
+
+\end{document}
