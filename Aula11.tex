@@ -2,8 +2,21 @@
 \documentclass[compress]{beamer}
 \usetheme{Warsaw}
 \usecolortheme{crane}
+%%%Xelatex section
+\usepackage{ifxetex}
+\ifxetex
+\usepackage{xltxtra}
+\usepackage{polyglossia}
+\setdefaultlanguage[⟨options⟩]{brazil}
+\usepackage{fontspec,lipsum}
+\defaultfontfeatures{Ligatures=TeX}
+%\setromanfont{Georgia}
+%\setsansfont{Tahoma}
+%%%%
+\else
 \usepackage[utf8]{inputenc}
 \usepackage[portuguese]{babel}
+\fi
 \usepackage{url}
 \usepackage{default}
 \usepackage{xcolor}
@@ -64,26 +77,23 @@ IRI 11: Recuperação de Informação Probabilística}
 \tableofcontents
 \end{frame}
 
-\section{Recap}
+\section{Recapitulação}
 
 \begin{frame}
-\frametitle{Relevance feedback: Basic idea}
+\frametitle{Revisão de relevância: Ideia básica}
 
 \begin{itemize}
-\item The user  issues a (short, simple) query.
-\item The search engine returns a set of documents.
-\item User marks some docs as relevant, some as nonrelevant.
-\item Search engine computes a new representation of
-  the information need -- should be better than the initial query.
-\item Search engine runs new query and returns new
- results.
-\item New results have (hopefully) better recall.
+\item O usuário faz uma consulta simples, curta.
+\item O buscador retorna um conjunto de documentos.
+\item O usuário marca alguns documentos como relevantes outros não.
+\item Buscador computa nova representação da informação requerida -- deve ser melhor que a consulta inicial.
+\item Buscador executa nova consulta e retorna resultados.
+\item Novos resultados apresentação melhor revocação (espera-se).
 \end{itemize}
 \end{frame}
 
-\begin{frame}
-\frametitle{Rocchio illustrated}
-
+\frame{
+\frametitle{Rocchio}
 
 \psset{unit=0.175cm}
 
@@ -137,56 +147,51 @@ IRI 11: Recuperação de Informação Probabilística}
 
 \end{pspicture}
 
-\end{frame}
+}
 
 
 \begin{frame}
-\frametitle{Types of query expansion}
+\frametitle{Tipos de expansão de consulta}
 %\pause[2]
 \begin{itemize}
-\item Manual thesaurus (maintained by editors, e.g., PubMed)
-\item Automatically derived thesaurus (e.g., based on
-  co-occurrence statistics)
+\item Tesauro manual (mantido por editores, p.ex., PubMed)
+\item Tesauro derivado automaticamente (p.ex., baseado em estatísticas de co-ocurrence statistics)
 \item Query-equivalence based on query log mining (common on
   the web as in the ``palm'' example)
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Query expansion at search engines}
+\frametitle{Expansão de Consulta em Buscadores}
 %\pause[2]
 \begin{itemize}
-\item Main source of query expansion at search engines:
-  query logs
-\item Example 1: After issuing the query [herbs], users
-  frequently search for [herbal remedies].
+\item Fonte principal de expansões de consulta em buscadores: logs de consulta
+\item Exemplo 1: Depois de consultar por [herbal], usuários frequentemente buscam por [remédio herbal].
 \begin{itemize}
 \item $\rightarrow$ 
-``herbal remedies'' is potential expansion of ``herb''.
+``remédio herbal'' é uma expansão em potencial para ``herbal'' ou ``erva''.
 \end{itemize}
 
-\item Example 2: Users searching for [flower pix]
-  frequently click on the URL \myblue{photobucket.com/flower}. 
-Users searching for [flower clipart]
-  frequently click on the \myblue{same URL}.
+\item Exemplo 2: Usuários buscando por [fotos de flores] frequentemente clicam na URL \myblue{photobucket.com/flor}. 
+Usuários buscando por [desenhos de flor]
+  frequentemente clicam na \myblue{mesma URL}.
 \begin{itemize}
 \item $\rightarrow$ 
-``flower clipart'' and ``flower pix'' are potential
-  expansions of each other.
+``desenhos de flor'' e ``fotos de flor'' São potencialmente extensões uma da outra.
 \end{itemize}
 
 \end{itemize}
 \end{frame}
 
 
-\begin{frame}[label=takeaway]
+\begin{frame}[Conclusão de Hoje]
 
-\frametitle{Take-away today}
+\frametitle{Conclusão de Hoje}
 \begin{itemize}
-\item Probabilistically grounded approach to IR 
-\item Probability Ranking Principle
-\item Models: BIM, BM25
-\item Assumptions these models make
+\item Abordagem probabilistica a RI
+\item Principio de Rankeamento de probabilidade
+\item Modelos: BIM, BM25
+\item Pressupostos destes modelos
 \end{itemize}
 \end{frame}
 
