@@ -65,7 +65,6 @@ IRI 11: Recuperação de Informação Probabilística}
 \institute [EMAp, FGV]{Escola de Matemática Aplicada,   Fundação Getúlio Vargas}
 \date
 
-
 \begin{document}
 
 \begin{frame}
@@ -194,6 +193,623 @@ Usuários buscando por [desenhos de flor]
 \item Pressupostos destes modelos
 \end{itemize}
 \end{frame}
+
+\section{Abordagem Probabilística à RI}
+\begin{frame}[<+->]
+\frametitle{Feedback de Relevância}
+\pause[2]
+\begin{itemize}
+
+\item No feedback de relevância, o usuário marca documentos como relevantes ou irrelevantes
+
+\item Dados alguns documentos conhecidos como relevantes e irrelevantes, computamos pesos para termos que não constam da consulta e que indicam quão provável é a sua ocorrência em documentos relevantes.
+
+\item Hoje: desenvolver uma abordagem probabilística para relevância e também um modelo probabilístico genérico para RI
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Abordagem Probabilística à Recuperação}
+\pause[2]
+
+
+\begin{itemize}
+\item Da uma necessidade informacional de um usuário (representada como uma consulta) e uma coleção de documentos (transformados em representações de documentos), um sistema deve determinar quão bem os documentos satisfazem a consulta
+\begin{itemize}
+
+\item  Um sistema de RI tem uma \myblue{compreensão incerta} da consulta do usuário, e pode \myblue{``chutar''} se um documento satisfaz à consulta. 
+\end{itemize}
+
+\item A teoria da Probabilidade provê os fundamentos para tal \myblue{raciocínio sob incerteza} 
+\begin{itemize}
+\item Modelos Probabilísticos exploram estes fundamentos para estimar quão provável  é a relevância de um documento para uma consulta
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Modelos de RI Probabilísticos -- visão geral}
+\pause[2]
+\begin{itemize}
+\item Modelo clássico de recuperação Probabilística
+\begin{itemize}
+\item Princípio de rankeamento de probabilidade
+\begin{itemize}
+\item Modelo de independência binária, BestMatch25 (Okapi)
+\end{itemize}
+\end{itemize}
+\item Redes Bayesianas para recuperação de texto
+\item Abordagem de modelo de linguagem para RI
+\begin{itemize}
+  \item Importante, será discutido adiante
+\end{itemize}
+\item Métodos probabilísticos estão entre os mais antigos, mas são um tema quente em RI
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Exercício: Modelo Probabilístico vs.\ outros modelos}
+\pause[2]
+\begin{itemize}
+\item Modelo booleano
+\begin{itemize}
+\item Modelos probabilísticos suportam rankeamento e portanto são melhores que o modelo booleano simples.
+\end{itemize}
+\item Modelo de espaço vetorial
+\begin{itemize}
+\item O Modelo de espaço vetorial também suporta rankeamento.
+\item Porque buscar uma alternativa ao modelo de espaço vetorial?
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Modelo Probabilístico vs.\ Espaço Vetorial}
+\pause[2]
+\begin{itemize}
+\item Modelo de espaço vetorial: rankeia documentos de acordo com similaridade com a consulta.
+\item A noção de similaridade não se traduz diretamente em relevância
+\item O documento de maior similaridade pode ser altamente relevante ou completamente irrelevante.
+\item A teoria da probabilidade é uma formalização mais elegante do que desejamos de um sistema de RI: Retornar documentos relevantes ao usuário.
+\end{itemize}
+\end{frame}
+
+\section{Probabilidade Básica}
+\begin{frame}[<+->]
+\frametitle{Probabilidade Básica}
+\pause[2]
+
+\begin{itemize}
+\item Para eventos $A$ e $B$
+\begin{itemize}
+\item A probabilidade conjunta $P(A \cap B)$   
+
+\item A probabilidade condicional $P(A|B)$ do evento $A$ ocorrer dado que o evento $B$ também tenha ocorrido.
+\end{itemize}
+
+\item \myblue{Regra da cadeia}: relação fundamental entre probabilidade conjunta e condicional:
+\begin{equation}
+\nonumber
+P(A B) = P(A \cap B) = P(A|B)P(B) = P(B|A)P(A) 
+\end{equation}
+
+
+\item Similarly for the  complement of an event $P(\overline{A})$:
+\begin{equation}
+\nonumber
+P(\overline{A}B) = P(B| \overline{A})P(\overline{A})
+\end{equation}
+
+\item \myblue{Regra da Probabilidade total}: Se $B$ pode ser dividido em uma partição de subconjuntos, então $P(B)$ é a soma das probabilidades dos conjuntos .  Um caso especial desta regra é:
+\begin{equation}
+\nonumber
+P(B) = P(AB) + P(\overline{A} B)
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Probabilidade Básica}
+\pause
+
+%\begin{itemize}
+%\item 
+\myblue{Regra de Bayes} para inverter probabilidades condicionais:
+%\end{itemize}
+\begin{equation}
+\nonumber
+P(A|B) = \frac{P(B|A)P(A)}{P(B)} = \left[\frac{P(B|A)}{\sum_{X \in \{ A, \overline{A}\}} P(B|X)P(X)}\right]P(A)
+\end{equation}
+
+\pause
+Pode ser vista como uma forma de atualizar probabilidades:  
+\begin{itemize}
+\pause
+\item Começa com a probabilidade \myblue{a priori} $P(A)$ (estimativa inicial de quão provável é um evento $A$ na ausência de outra informação)
+
+\pause
+\item A \myblue{probabilidade posterior} $P(A|B)$ depois de considerarmos a evidência $B$, baseada na verossimilhança de $B$ ocorrer nos dois casos em que $A$ ocorre ou não
+\end{itemize}
+
+\pause
+\myblue{Odds} (chance) de um evento nos dá um tipo de multiplicador para como as probabilidades variam:
+\begin{equation}
+\nonumber
+\mbox{Odds:\qquad } O(A) = \frac{P(A)}{P(\overline{A})} = \frac{P(A)}{1 - P(A)}\label{O-notation}
+\end{equation}
+\end{frame}
+
+\section{Princípio de Rankeamento de Probabilidade}
+\begin{frame}[<+->]
+\frametitle{O Problema do Rankeamento de Documentos}
+\pause[2]
+
+\begin{itemize}
+\item Recuperação Rankeada : Dada uma coleção de documentos, o usuário realiza uma consulta que retorna uma lista ordenada de documentos
+
+\item Assumindo noção binária de relevância: $R_{d,q}$ é uma variável aleatória dicotômica, tal que
+\begin{itemize} 
+
+\item $R_{d,q}=1$ se o documento $d$ é relevante com respeito à consulta $q$ %Often we write just $R$ for $R_{d,q}$
+\item $R_{d,q}=0$ caso contrário  
+\end{itemize}
+
+\item O rankeamento probabilístico ordena os documentos em ordem decrescente de relevância estimada com respeito à consulta: $P(R=1|d,q)$
+
+\item Assume que a relevância de cada documento é independente da relevância de outros documentos
+
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Princípio do Rankeamento de Probabilidade (PRP)}
+\pause[2]
+
+\begin{itemize}
+\item PRP resumidamente 
+\begin{itemize}	
+\item Se os documentos recuperados são rankeados decrescentemente com sua probabilidade de relevância, então a efetividade do sistema será a melhor possível.
+\end{itemize}
+\end{itemize}
+\begin{itemize}
+\item PRP em detalhes
+\begin{itemize}
+\item Se a resposta do sistema a cada consulta for um rankeamento dos documentos em ordem decrescente de probabilidade de relevância para a consulta, \myblue{Onde as probabilidades são estimadas com o máximo de acurácia possível, utilizando toda a informação disponível} 
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Modelo de Independência Binário (BIM)}
+\pause[2]
+
+\begin{itemize}
+\item Tradicionalmente usado com o PRP
+\end{itemize}
+
+Pressupostos:  
+\begin{itemize}
+\item `Binário' (equivalente ao booleano): documentos e consultas representados vetores de incidência binários
+\begin{itemize}
+
+\item P.Ex., documento $d$ representado pelo vetor $\vec{x} = (x_1, \ldots, x_M)$, onde $x_t = 1$ se o termo $t$ ocorre em $d$ e $x_t = 0$ em caso contrário.
+\item Documentos diferentes podem ter a mesma representação vetorial
+%\item Similarly, we represent $q$ by the incidence vector $\vec{q}$
+\end{itemize}
+
+\item  `Independência': não há associação entre termos
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink=15]
+\frametitle{Matriz de Incidência Binária}
+
+\begin{tabular}{@{}lccccccc@{}}
+ & Anthony  & Julius & The  & Hamlet &
+ Othello & Macbeth & \ldots \\
+ & and  & Caesar & Tempest &  &  &  &  \\
+ & Cleopatra \\
+\term{Anthony} &    1 & 1 & 0 & \myblue{0} & 0 & 1 & \\
+\term{Brutus} &     1 & 1 & 0 & \myblue{1} & 0 & 0 & \\
+\term{Caesar} &     1 & 1 & 0 & \myblue{1} & 1 & 1 & \\
+\term{Calpurnia} &  0 & 1 & 0 & \myblue{0} & 0 & 0 & \\
+\term{Cleopatra} &  1 & 0 & 0 & \myblue{0} & 0 & 0 & \\
+\term{mercy} &      1 & 0 & 1 & \myblue{1} & 1 & 1 & \\
+\term{worser} &     1 & 0 & 1 & \myblue{1} & 1 & 0 & \\
+\ldots
+\end{tabular}
+
+
+\bigskip
+
+Cada Documento é representado por um \myblue{vector binário} $\in \{0,1\}^{|V|}$.
+
+
+\end{frame}
+
+
+
+\begin{frame}[<+->]
+\frametitle{Modelo de Independência Binária}
+\pause[2]
+
+Para tornar precisa uma estratégia de recuperação probabilística, precisamos estimar como os termos do documento contribuem para sua relevância
+\begin{itemize}
+
+\item Precisamos encontrar estatísticas mensuráveis (frequência do termo, frequência de documentos, comprimento do documento ) que afetem a relevância de um documento
+
+\item Combinar estas estatísticas para estima a probabilidade da relevância do documento: $P(R|d,q)$ 
+
+\item Como fazemos isso?
+
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Modelo de Independência Binária}
+\pause[2]
+
+ $P(R|d,q)$  é modelada como vetores de incidência de termos: $P(R|\vec{x}, \vec{q})$
+\begin{eqnarray}
+\nonumber
+P(R=1|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=1, \vec{q})P(R=1|\vec{q})}{P(\vec{x}|\vec{q})} \label{Rxq-bayes} \\
+P(R=0|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=0, \vec{q})P(R=0|\vec{q})}{P(\vec{x}|\vec{q})} \nonumber
+\end{eqnarray}
+\begin{itemize}
+
+\item $P(\vec{x}|R=1,\vec{q})$ e $P(\vec{x}|R=0,\vec{q})$: probabilidade de que se um documento relevante ou irrelevante é recuperado, então a representação do documento é $\vec{x}$
+\item Usar estatísticas acerca da coleção de documentos para estimar estas probabilidades
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Binary Independence Model}
+
+$P(R|d,q)$  is modeled using term incidence vectors as $P(R|\vec{x}, \vec{q})$
+\begin{eqnarray}
+\nonumber
+P(R=1|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=1, \vec{q})P(R=1|\vec{q})}{P(\vec{x}|\vec{q})} \label{Rxq-bayes2} \\
+P(R=0|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=0, \vec{q})P(R=0|\vec{q})}{P(\vec{x}|\vec{q})} \nonumber
+\end{eqnarray}
+\begin{itemize}
+\pause
+\item $P(R=1|\vec{q})$ and $P(R=0|\vec{q})$: prior probability of retrieving a relevant or nonrelevant document for a query $\vec{q}$
+\pause
+\item Estimate $P(R=1|\vec{q})$ and $P(R=0|\vec{q})$ from percentage of relevant documents in the collection
+\pause
+\item Since a document is either relevant or nonrelevant to a query, we must have that:
+\pause
+\begin{equation}
+\nonumber
+P(R=1|\vec{x}, \vec{q}) + P(R=0|\vec{x},\vec{q}) = 1
+\end{equation}
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Deriving a Ranking Function for Query Terms (1)}
+\pause[2]
+
+\begin{itemize}
+\item Given a query $q$, ranking documents by $P(R=1|d,q)$ is modeled under BIM as ranking them by $P(R=1|\vec{x},\vec{q})$
+
+\item Easier: rank documents by their odds of relevance (gives same ranking)
+\begin{eqnarray}
+\nonumber
+O(R|\vec{x},\vec{q})
+= \frac{P(R=1|\vec{x},\vec{q})}{P(R=0|\vec{x},\vec{q})}
+= \frac{\frac{P(R=1|\vec{q})P(\vec{x}|R=1,\vec{q})}{P(\vec{x}|\vec{q})}}{\frac{P(R=0|\vec{q})P(\vec{x}|R=0,\vec{q})}{P(\vec{x}|\vec{q})}}\\
+\nonumber
+ = \frac{P(R=1|\vec{q})}{P(R=0|\vec{q})}\cdot \frac{P(\vec{x}|R=1,\vec{q})}{P(\vec{x}|R=0,\vec{q})} 
+\end{eqnarray}
+
+\item $\frac{P(R=1|\vec{q})}{P(R=0|\vec{q})}$ is a constant for a given query - can be ignored
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Deriving a Ranking Function for Query Terms (2)}
+\pause[2]
+
+It is at this point that we make the \myblue{Naive Bayes conditional independence assumption} that the presence or absence of a word in a document is independent of the presence or absence of any other word (given the query):
+
+\begin{equation}
+\nonumber
+\frac{P(\vec{x}|R=1,\vec{q})}{P(\vec{x}|R=0,\vec{q})} = \prod_{t=1}^M
+\frac{P(x_t|R=1,\vec{q})}{P(x_t|R=0,\vec{q})}
+\end{equation}
+
+So:
+\begin{equation}
+\nonumber
+O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot \prod_{t=1}^M
+\frac{P(x_t|R=1,\vec{q})}{P(x_t|R=0,\vec{q})}
+\end{equation}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Exercise}
+\pause[2]
+
+Naive Bayes conditional independence assumption:  the
+presence or absence of a word in a document is independent
+of the presence or absence of any other word (given the
+query).
+
+\pause
+
+\myblue{Why is this wrong? Good example? }
+
+\pause
+
+PRP assumes that the relevance of each document is
+independent of the relevance of other documents.
+
+\pause
+
+\myblue{Why is this wrong? Good example?}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Deriving a Ranking Function for Query Terms (3)}
+\pause
+
+Since each $x_t$ is either 0 or 1, we can separate the terms:
+\pause
+\begin{equation}
+\nonumber
+O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
+\prod_{t: x_t=1}
+\frac{P(x_t=1|R=1,\vec{q})}{P(x_t=1|R=0,\vec{q})} \cdot
+\prod_{t: x_t=0}
+\frac{P(x_t=0|R=1,\vec{q})}{P(x_t=0|R=0,\vec{q})}
+\end{equation}
+
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Deriving a Ranking Function for Query Terms (4)}
+\pause
+\begin{itemize}
+\item Let $p_t = P(x_t=1|R=1,\vec{q})$ be the probability of a term appearing in relevant document 
+\pause
+\item Let $u_t = P(x_t = 1|R=0,\vec{q})$ be the probability of a term appearing in a nonrelevant document
+
+\pause
+\item Can be displayed as contingency table:
+\end{itemize}
+
+\bigskip
+
+\begin{tabular}[t]{|cc|cc|}
+\hline
+             & document & relevant ($R=1$) & nonrelevant ($R=0$) \\ \hline
+Term present & $x_t = 1$ & $p_t$ & $u_t$  \\
+Term absent  & $x_t = 0$ & $1-p_t$ & $1-u_t$ \\ \hline
+\end{tabular}
+
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Deriving a Ranking Function for Query Terms}
+\pause[2]
+
+Additional simplifying assumption: terms not occurring in the query are equally likely to occur in relevant and nonrelevant documents
+\begin{itemize}
+\item If $q_t = 0$, then $p_t = u_t$
+\end{itemize} 
+
+Now we need only to consider terms in the products that appear in the query:
+\begin{equation}
+\nonumber
+O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
+\prod_{t: x_t = q_t =1}
+\frac{p_t}{u_t} \cdot
+\prod_{t: x_t=0,q_t=1}
+\frac{1-p_t}{1-u_t}
+\end{equation}
+\begin{itemize}
+
+\item The left product is over query terms found in the document and the right product is over query terms not found in the document
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Deriving a Ranking Function for Query Terms}
+\pause[2]
+
+Including the query terms found in the document into the right product, but simultaneously dividing  by them in the left product, gives:
+\begin{equation}
+\nonumber
+O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
+\prod_{t: x_t = q_t =1}
+\frac{p_t(1-u_t)}{u_t(1-p_t)} \cdot
+\prod_{t: q_t=1}
+\frac{1-p_t}{1-u_t}
+\end{equation}
+
+\begin{itemize}
+\item The left product is still over query terms found in
+  the document, but the right product is now over all query
+  terms, hence constant for a particular query and can be
+  ignored. 
+
+\item $\rightarrow$ \myblue{The only quantity that needs to be estimated to rank documents w.r.t a query is the left product} 
+
+%We can equally rank documents by the logarithm of this term, since log is a monotonic function. 
+
+\item Hence the \myblue{Retrieval Status Value} (RSV) in this model:
+\begin{equation}
+\nonumber
+RSV_d = \log \prod_{t: x_t = q_t =1} \frac{p_t(1-u_t)}{u_t(1-p_t)} =
+\sum_{t: x_t = q_t =1} \log \frac{p_t(1-u_t)}{u_t(1-p_t)}
+\end{equation}
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Deriving a Ranking Function for Query Terms}
+\pause[2]
+
+Equivalent: rank documents using the \myblue{log odds ratios} for the terms in the query $c_t$:
+\begin{equation}
+\nonumber
+c_t = \log \frac{p_t(1-u_t)}{u_t(1-p_t)} = \log \frac{p_t}{(1-p_t)} - \log \frac{u_t}{1-u_t}
+\end{equation}
+\begin{itemize}
+
+\item The \myblue{odds ratio} is the ratio of two odds: (i) the odds of the term appearing if the document is relevant ($p_t/(1-p_t)$), and (ii)
+the odds of the term appearing if the document is nonrelevant ($u_t/(1-u_t)$) %The \myblue{log odds ratio} is the log of that quantity.
+
+\item $c_t$ = 0: term has equal odds of
+appearing in relevant and nonrelevant docs
+\item $c_t$ positive: higher odds to appear in relevant
+  documents
+\item $c_t$ negative: higher odds to appear in nonrelevant
+  documents
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Term weight $c_t$ in  BIM}
+\pause[2]
+
+\begin{itemize}
+\item $c_t=\log \frac{p_t}{(1-p_t)} - \log \frac{u_t}{1-u_t}$ functions as a term
+  weight.
+\item Retrieval status value for document $d$: $RSV_d =
+\sum_{x_t=q_t=1} c_t$.  
+\item So BIM and vector space model are identical on an
+  operational level \ldots
+\item \ldots except that the term weights are different.
+\item In particular: we can use the same data structures
+  (inverted index etc) for the two models.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{How to compute probability estimates}
+\pause[2]
+
+For each term $t$ in a query, estimate $c_t$ in the whole collection using a contingency table of counts of documents in the collection, where $\docf_t$ is the number of documents that contain term $t$:
+%
+\begin{tabular}[t]{|cc|cc|c|}
+\hline
+             & documents & relevant & nonrelevant & Total \\ \hline
+Term present & $x_t = 1$ & $s$ & $\docf_t-s$ & $\docf_t$ \\
+Term absent  & $x_t = 0$ & $S-s$ & $(N-\docf_t)-(S-s)$ & $N-\docf_t$ \\ \hline
+             & Total & $S$ & $N-S$ & $N$ \\ \hline
+\end{tabular}
+
+%
+\begin{equation}
+\nonumber
+ p_t = s/S  
+\end{equation}
+\begin{equation}
+\nonumber
+u_t = (\docf_t-s)/(N-S) 
+\end{equation}
+\begin{equation}
+\nonumber
+c_t = K(N,\docf_t,S,s) = \log\frac{s/(S-s)}{(\docf_t-s)/((N-\docf_t)-(S-s))}  
+\end{equation}
+
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Avoiding zeros}
+\pause[2]
+
+\begin{itemize}
+\item If any of the counts is a zero, then the term weight is
+  not well-defined.
+\item Maximum likelihood estimates do not work for rare
+  events.
+\item To avoid zeros: \myblue{add 0.5 to each count}
+  (expected likelihood estimation = ELE)
+\item For example, use $S-s+0.5$ in formula for $S-s$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercise}
+\pause
+
+\begin{itemize}
+\item Query: \texttt{Obama health plan}
+\item Doc1: \texttt{Obama rejects allegations about his own bad health}
+\item Doc2: \texttt{The plan is to visit Obama}
+\item Doc3: \texttt{Obama raises concerns with US health plan reforms}
+\end{itemize}
+\pause
+Estimate the probability that the above documents are relevant to the query. Use a contingency table. These are the only three documents in the collection
+\end{frame} 
+
+\begin{frame}[<+->]
+\frametitle{Simplifying assumption}
+\pause[2]
+
+\begin{itemize}\item Assuming that relevant documents are a very small percentage of the collection, approximate statistics for nonrelevant documents by statistics from the whole collection
+
+\item Hence, $u_t$ (the probability of term occurrence in nonrelevant documents for a query) is $\docf_t/N$ and
+\begin{equation}
+\nonumber
+\log [(1-u_t)/u_t] = \log [(N-\docf_t)/\docf_t] \approx \log N/\docf_t 
+\end{equation}
+
+\item This should look familiar to you \ldots
+
+\item The above approximation cannot easily be extended to relevant documents
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Probability estimates in relevance feedback}
+\pause[2]
+
+
+
+
+
+
+\begin{itemize}
+\item Statistics of relevant documents ($p_t$) in relevance
+  feedback can be estimated using maximum likelihood
+  estimation or ELE (add 0.5).
+\begin{itemize}
+\item Use the frequency of term occurrence in known relevant
+  documents. 
+\end{itemize}
+\item This is the basis of probabilistic approaches to relevance feedback weighting in a feedback loop
+\item The exercise we just did was a probabilistic relevance
+  feedback exercise since we were assuming the availability
+  of relevance judgments.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Probability estimates in adhoc retrieval}
+\pause[2]
+
+\begin{itemize}
+\item Ad-hoc retrieval: no user-supplied relevance judgments available
+\item In this case: assume that $p_t$ is constant over all terms $x_t$ in the query and that $p_t = 0.5$ 
+\item Each term is equally likely to occur in a relevant document, and so the $p_t$ and $(1-p_t)$ factors cancel out in the expression for $RSV$ 
+
+\item Weak estimate, but doesn't disagree violently with expectation that query terms appear in many but not all relevant documents
+
+\item Combining this method with the earlier approximation for $u_t$, the document ranking is determined simply by which query terms occur in documents scaled by their idf weighting 
+
+\item For short documents (titles or abstracts) in one-pass retrieval situations, this estimate can be quite satisfactory
+\end{itemize}
+\end{frame}
+
 
 
 \end{document}
