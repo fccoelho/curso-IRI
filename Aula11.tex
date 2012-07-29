@@ -465,9 +465,10 @@ P(R=0|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=0, \vec{q})P(R=0|\vec{q})}{P(\vec{
 \end{itemize}
 \end{frame}
 \begin{frame}
-\frametitle{Binary Independence Model}
 
-$P(R|d,q)$  is modeled using term incidence vectors as $P(R|\vec{x}, \vec{q})$
+\frametitle{Modelo de Independência Binária}
+
+$P(R|d,q)$  é modelada como vetores de incidência de termos: $P(R|\vec{x}, \vec{q})$
 \begin{eqnarray}
 \nonumber
 P(R=1|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=1, \vec{q})P(R=1|\vec{q})}{P(\vec{x}|\vec{q})} \label{Rxq-bayes2} \\
@@ -475,11 +476,11 @@ P(R=0|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=0, \vec{q})P(R=0|\vec{q})}{P(\vec{
 \end{eqnarray}
 \begin{itemize}
 \pause
-\item $P(R=1|\vec{q})$ and $P(R=0|\vec{q})$: prior probability of retrieving a relevant or nonrelevant document for a query $\vec{q}$
+\item $P(R=1|\vec{q})$ e $P(R=0|\vec{q})$: probabilidade \textit{a priori} de recuperar um documento relevante ou irrelevante para uma consulta $\vec{q}$
 \pause
-\item Estimate $P(R=1|\vec{q})$ and $P(R=0|\vec{q})$ from percentage of relevant documents in the collection
+\item Estimar $P(R=1|\vec{q})$ e $P(R=0|\vec{q})$ a partir da percentagem de documentos relevantes na coleção
 \pause
-\item Since a document is either relevant or nonrelevant to a query, we must have that:
+\item Uma vez que um documento é ou relevante ou irrelevante para uma consulta, temos que:
 \pause
 \begin{equation}
 \nonumber
@@ -488,13 +489,13 @@ P(R=1|\vec{x}, \vec{q}) + P(R=0|\vec{x},\vec{q}) = 1
 \end{itemize}
 \end{frame}
 \begin{frame}
-\frametitle{Deriving a Ranking Function for Query Terms (1)}
+\frametitle{Encontrando uma função de rankeamento para termos de busca(1)}
 \pause[2]
 
 \begin{itemize}
-\item Given a query $q$, ranking documents by $P(R=1|d,q)$ is modeled under BIM as ranking them by $P(R=1|\vec{x},\vec{q})$
+\item Dada uma consulta $q$, rankear documentos por $P(R=1|d,q)$ é modelado no BIM como rankear por $P(R=1|\vec{x},\vec{q})$
 
-\item Easier: rank documents by their odds of relevance (gives same ranking)
+\item Mais fácil: rankear documentos por seus odds de relevância (dado o mesmo rankeamento)
 \begin{eqnarray}
 \nonumber
 O(R|\vec{x},\vec{q})
@@ -504,14 +505,14 @@ O(R|\vec{x},\vec{q})
  = \frac{P(R=1|\vec{q})}{P(R=0|\vec{q})}\cdot \frac{P(\vec{x}|R=1,\vec{q})}{P(\vec{x}|R=0,\vec{q})} 
 \end{eqnarray}
 
-\item $\frac{P(R=1|\vec{q})}{P(R=0|\vec{q})}$ is a constant for a given query - can be ignored
+\item $\frac{P(R=1|\vec{q})}{P(R=0|\vec{q})}$ é constante para uma dada consulta - pode ser ignorado
 \end{itemize}
 \end{frame}
 \begin{frame}[<+->]
-\frametitle{Deriving a Ranking Function for Query Terms (2)}
+\frametitle{Encontrando uma função de rankeamento para termos de busca (2)}
 \pause[2]
 
-It is at this point that we make the \myblue{Naive Bayes conditional independence assumption} that the presence or absence of a word in a document is independent of the presence or absence of any other word (given the query):
+É neste ponto que aceitamos o pressuposto de \myblue{independência condicional do Naive Bayes} segundo o qual a presença ou ausência de uma palavra em um documento é independente da presença ou ausência de qualquer outra palavra (dada a consulta):
 
 \begin{equation}
 \nonumber
@@ -519,7 +520,7 @@ It is at this point that we make the \myblue{Naive Bayes conditional independenc
 \frac{P(x_t|R=1,\vec{q})}{P(x_t|R=0,\vec{q})}
 \end{equation}
 
-So:
+logo:
 \begin{equation}
 \nonumber
 O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot \prod_{t=1}^M
@@ -528,26 +529,22 @@ O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot \prod_{t=1}^M
 \end{frame}
 
 \begin{frame}[<+->]
-\frametitle{Exercise}
+\frametitle{Exercício}
 \pause[2]
 
-Naive Bayes conditional independence assumption:  the
-presence or absence of a word in a document is independent
-of the presence or absence of any other word (given the
-query).
+Pressuposto de independência condicional do Naive Bayes:  a presença ou ausência de uma palavra em um documento é independente da presença ou ausência de qualquer outra palavra (dada a consulta).
 
 \pause
 
-\myblue{Why is this wrong? Good example? }
+\myblue{Porquê isto está errado? cite um bom exemplo? }
 
 \pause
 
-PRP assumes that the relevance of each document is
-independent of the relevance of other documents.
+PRP assume que a relevância de cada documento é independente da relevância dos outros documentos.
 
 \pause
 
-\myblue{Why is this wrong? Good example?}
+\myblue{Porquê isto está errado? cite um bom exemplo?}
 
 
 
@@ -555,10 +552,10 @@ independent of the relevance of other documents.
 
 
 \begin{frame}
-\frametitle{Deriving a Ranking Function for Query Terms (3)}
+\frametitle{Encontrando uma função de rankeamento para termos de busca (3)}
 \pause
 
-Since each $x_t$ is either 0 or 1, we can separate the terms:
+Uma vez que cada $x_t$ é 0 ou 1, podemos separar os termos:
 \pause
 \begin{equation}
 \nonumber
@@ -571,37 +568,37 @@ O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
 
 \end{frame}
 \begin{frame}[<+->]
-\frametitle{Deriving a Ranking Function for Query Terms (4)}
+\frametitle{Encontrando uma função de rankeamento para termos de busca (4)}
 \pause
 \begin{itemize}
-\item Let $p_t = P(x_t=1|R=1,\vec{q})$ be the probability of a term appearing in relevant document 
+\item Seja $p_t = P(x_t=1|R=1,\vec{q})$ a probabilidade de um termo aparecer em um documento relevante
 \pause
-\item Let $u_t = P(x_t = 1|R=0,\vec{q})$ be the probability of a term appearing in a nonrelevant document
+\item Seja $u_t = P(x_t = 1|R=0,\vec{q})$ a probabilidade de um termo aparecer em um documento irrelevante
 
 \pause
-\item Can be displayed as contingency table:
+\item Representando essas probabilidades em uma tabela de contingência:
 \end{itemize}
 
 \bigskip
 
 \begin{tabular}[t]{|cc|cc|}
 \hline
-             & document & relevant ($R=1$) & nonrelevant ($R=0$) \\ \hline
-Term present & $x_t = 1$ & $p_t$ & $u_t$  \\
-Term absent  & $x_t = 0$ & $1-p_t$ & $1-u_t$ \\ \hline
+             & documento & relevante ($R=1$) & irrelevante ($R=0$) \\ \hline
+Termo presente & $x_t = 1$ & $p_t$ & $u_t$  \\
+Termo ausente  & $x_t = 0$ & $1-p_t$ & $1-u_t$ \\ \hline
 \end{tabular}
 
 \end{frame}
 \begin{frame}[<+->]
-\frametitle{Deriving a Ranking Function for Query Terms}
+\frametitle{Encontrando uma função de rankeamento para termos de busca}
 \pause[2]
 
-Additional simplifying assumption: terms not occurring in the query are equally likely to occur in relevant and nonrelevant documents
+Pressuposto simplificador adicional: termos que não ocorrem na consulta são igualmente prováveis de ocorrer em documentos relevantes ou irrelevantes
 \begin{itemize}
-\item If $q_t = 0$, then $p_t = u_t$
+\item Se $q_t = 0$, então $p_t = u_t$
 \end{itemize} 
 
-Now we need only to consider terms in the products that appear in the query:
+Agora precisamos apenas considerar termos nos produtos que aparecem na consulta:
 \begin{equation}
 \nonumber
 O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
@@ -612,14 +609,14 @@ O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
 \end{equation}
 \begin{itemize}
 
-\item The left product is over query terms found in the document and the right product is over query terms not found in the document
+\item O produto da esquerda é sobre os termos de consulta encontrados no documento, e o produto da direita é sobre termos de consulta não encontrados no documento
 \end{itemize}
 \end{frame}
 \begin{frame}[<+->]
-\frametitle{Deriving a Ranking Function for Query Terms}
+\frametitle{Encontrando uma função de rankeamento para termos de busca}
 \pause[2]
 
-Including the query terms found in the document into the right product, but simultaneously dividing  by them in the left product, gives:
+Incluindo os termos de consulta encontrados no documento no produto da direita, mas   ao mesmo tempo dividindo o produto da esquerda por eles, obtemos:
 \begin{equation}
 \nonumber
 O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
@@ -630,16 +627,13 @@ O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
 \end{equation}
 
 \begin{itemize}
-\item The left product is still over query terms found in
-  the document, but the right product is now over all query
-  terms, hence constant for a particular query and can be
-  ignored. 
+\item O produto da esquerda continua a ser so bre os termos encontrados no documento, mas o da direita agora é sobre todos os termos de consulta, que é contante para uma dada consulta e pode ser ignorado. 
 
-\item $\rightarrow$ \myblue{The only quantity that needs to be estimated to rank documents w.r.t a query is the left product} 
+\item $\rightarrow$ \myblue{A única quantidade que precisa ser estimada para rankear documentos com respeito a uma consulta, é o produto da esquerda} 
 
 %We can equally rank documents by the logarithm of this term, since log is a monotonic function. 
 
-\item Hence the \myblue{Retrieval Status Value} (RSV) in this model:
+\item Daí vem o  \myblue{Valor de status de Recuperação} (RSV) neste modelo:
 \begin{equation}
 \nonumber
 RSV_d = \log \prod_{t: x_t = q_t =1} \frac{p_t(1-u_t)}{u_t(1-p_t)} =
@@ -648,57 +642,51 @@ RSV_d = \log \prod_{t: x_t = q_t =1} \frac{p_t(1-u_t)}{u_t(1-p_t)} =
 \end{itemize}
 \end{frame}
 \begin{frame}[<+->]
-\frametitle{Deriving a Ranking Function for Query Terms}
+\frametitle{Encontrando uma função de rankeamento para termos de busca}
 \pause[2]
 
-Equivalent: rank documents using the \myblue{log odds ratios} for the terms in the query $c_t$:
+Equivalente: rankear documentos usando o \myblue{log da razão de odds} para os termos na consulta $c_t$:
 \begin{equation}
 \nonumber
 c_t = \log \frac{p_t(1-u_t)}{u_t(1-p_t)} = \log \frac{p_t}{(1-p_t)} - \log \frac{u_t}{1-u_t}
 \end{equation}
 \begin{itemize}
 
-\item The \myblue{odds ratio} is the ratio of two odds: (i) the odds of the term appearing if the document is relevant ($p_t/(1-p_t)$), and (ii)
-the odds of the term appearing if the document is nonrelevant ($u_t/(1-u_t)$) %The \myblue{log odds ratio} is the log of that quantity.
+\item A  \myblue{razão de odds } (ou razão de chances) é a razão de dois odds: (i) os odds do termo aparecer se o documento for relevante ($p_t/(1-p_t)$), e (ii)
+os odds do termo aparecer se o documento for irrelevante ($u_t/(1-u_t)$) %The \myblue{log odds ratio} is the log of that quantity.
 
-\item $c_t$ = 0: term has equal odds of
-appearing in relevant and nonrelevant docs
-\item $c_t$ positive: higher odds to appear in relevant
-  documents
-\item $c_t$ negative: higher odds to appear in nonrelevant
-  documents
+\item $c_t$ = 0: Termo tem odds iguais de aparecer em docs relevantes e irrelevantes
+\item $c_t$ positivo: odds mais altos de aparecer em documentos relevantes
+\item $c_t$ negativo: odds mais altos de aparecer em documentos irrelevantes
 \end{itemize}
 \end{frame}
 
 \begin{frame}[<+->]
-\frametitle{Term weight $c_t$ in  BIM}
+\frametitle{Peso de termo $c_t$ no  BIM}
 \pause[2]
 
 \begin{itemize}
-\item $c_t=\log \frac{p_t}{(1-p_t)} - \log \frac{u_t}{1-u_t}$ functions as a term
-  weight.
-\item Retrieval status value for document $d$: $RSV_d =
+\item $c_t=\log \frac{p_t}{(1-p_t)} - \log \frac{u_t}{1-u_t}$ funciona como peso para o termo.
+\item RSV parap documento $d$: $RSV_d =
 \sum_{x_t=q_t=1} c_t$.  
-\item So BIM and vector space model are identical on an
-  operational level \ldots
-\item \ldots except that the term weights are different.
-\item In particular: we can use the same data structures
-  (inverted index etc) for the two models.
+\item O BIM e o modelo de espaço vetorial são idênticos no nível operacional\ldots
+\item \ldots exceto que os pesos dos termos são diferentes.
+\item Ou seja: podemos usar as mesmas estruturas de dados (indices invertidos, etc.) para os dois modelos.
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}[<+->]
-\frametitle{How to compute probability estimates}
+\frametitle{Como Estimar Probabilidades}
 \pause[2]
 
-For each term $t$ in a query, estimate $c_t$ in the whole collection using a contingency table of counts of documents in the collection, where $\docf_t$ is the number of documents that contain term $t$:
+para cada termo $t$ em uma consulta, estimamos $c_t$ em toda a coleção usando uma tabela de contingência de contagens de documentos na coleção onde $\docf_t$ 'e o número de documentos que contem o termo $t$:
 %
 \begin{tabular}[t]{|cc|cc|c|}
 \hline
-             & documents & relevant & nonrelevant & Total \\ \hline
-Term present & $x_t = 1$ & $s$ & $\docf_t-s$ & $\docf_t$ \\
-Term absent  & $x_t = 0$ & $S-s$ & $(N-\docf_t)-(S-s)$ & $N-\docf_t$ \\ \hline
+             & documentos & relevante & irrelevante & Total \\ \hline
+Termo presente & $x_t = 1$ & $s$ & $\docf_t-s$ & $\docf_t$ \\
+Termo ausente & $x_t = 0$ & $S-s$ & $(N-\docf_t)-(S-s)$ & $N-\docf_t$ \\ \hline
              & Total & $S$ & $N-S$ & $N$ \\ \hline
 \end{tabular}
 
@@ -720,93 +708,81 @@ c_t = K(N,\docf_t,S,s) = \log\frac{s/(S-s)}{(\docf_t-s)/((N-\docf_t)-(S-s))}
 \end{frame}
 
 \begin{frame}[<+->]
-\frametitle{Avoiding zeros}
+\frametitle{Evitando zeros}
 \pause[2]
 
 \begin{itemize}
-\item If any of the counts is a zero, then the term weight is
-  not well-defined.
-\item Maximum likelihood estimates do not work for rare
-  events.
-\item To avoid zeros: \myblue{add 0.5 to each count}
-  (expected likelihood estimation = ELE)
-\item For example, use $S-s+0.5$ in formula for $S-s$
+\item Se qualquer das contagens for zero, o peso do termo é mal-definido.
+\item Estimativas de máxima verossimilhança não funcionam para eventos raros.
+\item Para evitar zeros: \myblue{adicione 0.5 a cada contagem}
+  (Estimação por verossimilhança esperada = ELE)
+\item Por exemplo, use $S-s+0.5$ na fórmula para $S-s$
 \end{itemize}
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Exercise}
+\frametitle{Exercício}
 \pause
 
 \begin{itemize}
-\item Query: \texttt{Obama health plan}
+\item Consulta: \texttt{Obama health plan}
 \item Doc1: \texttt{Obama rejects allegations about his own bad health}
 \item Doc2: \texttt{The plan is to visit Obama}
 \item Doc3: \texttt{Obama raises concerns with US health plan reforms}
 \end{itemize}
 \pause
-Estimate the probability that the above documents are relevant to the query. Use a contingency table. These are the only three documents in the collection
+Estime a probabilidade de que os documentos acima são relevantes para a consulta. Use uma tabela de contingência. Estes são os únicos três documentos na coleção
 \end{frame} 
 
 \begin{frame}[<+->]
-\frametitle{Simplifying assumption}
+\frametitle{Pressuposto Simplificador}
 \pause[2]
 
-\begin{itemize}\item Assuming that relevant documents are a very small percentage of the collection, approximate statistics for nonrelevant documents by statistics from the whole collection
+\begin{itemize}\item Assumindo que documentos relevantes são uma fração bem pequena da coleção, aproxime estatísticas para documentos irrelevantes a partir de estatísticas da coleção completa
 
-\item Hence, $u_t$ (the probability of term occurrence in nonrelevant documents for a query) is $\docf_t/N$ and
+\item Por conseguinte, $u_t$ (a probabilidade de ocorrência do termo em documentos irrelevantes para uma dada consulta) é $\docf_t/N$ e
 \begin{equation}
 \nonumber
 \log [(1-u_t)/u_t] = \log [(N-\docf_t)/\docf_t] \approx \log N/\docf_t 
 \end{equation}
 
-\item This should look familiar to you \ldots
+\item Esta equação deve parecer familiar \ldots
 
-\item The above approximation cannot easily be extended to relevant documents
+\item A aproximação acima não pode ser facilmente estendida para documentos relevantes
 \end{itemize}
 \end{frame}
 
 
 \begin{frame}[<+->]
-\frametitle{Probability estimates in relevance feedback}
+\frametitle{Estimativas de probabilidade em feedback de relevância}
 \pause[2]
 
-
-
-
-
-
 \begin{itemize}
-\item Statistics of relevant documents ($p_t$) in relevance
-  feedback can be estimated using maximum likelihood
-  estimation or ELE (add 0.5).
+\item Estatísticas de documentos relevantes ($p_t$) no feedback de relevância pode ser estimado por meio de máxima verossimilhança ou ELE(adicionndo 0.5)
 \begin{itemize}
-\item Use the frequency of term occurrence in known relevant
-  documents. 
+\item Use a frequência de ocorrência de termos em documentos conhecidamente relevantes. 
 \end{itemize}
-\item This is the basis of probabilistic approaches to relevance feedback weighting in a feedback loop
-\item The exercise we just did was a probabilistic relevance
-  feedback exercise since we were assuming the availability
-  of relevance judgments.
+\item Esta é a base das abordagens probabilísticas para feedback de relevância 
+\item O exercício que acabamos de fazer foi um exercício de feedback de relevância uma vez que assumimos a disponibilidade de julgamentos de relevância.
 \end{itemize}
 
 \end{frame}
 
 \begin{frame}[<+->]
-\frametitle{Probability estimates in adhoc retrieval}
+\frametitle{Estimativas de Probabilidade em Recuperação adhoc }
 \pause[2]
 
 \begin{itemize}
-\item Ad-hoc retrieval: no user-supplied relevance judgments available
-\item In this case: assume that $p_t$ is constant over all terms $x_t$ in the query and that $p_t = 0.5$ 
-\item Each term is equally likely to occur in a relevant document, and so the $p_t$ and $(1-p_t)$ factors cancel out in the expression for $RSV$ 
+\item Recuperação Ad-hoc: não há feedback de relevância pelo usuário
+\item Neste caso: assuma que $p_t$ é constante para todos os termos $x_t$ na consulta e que  $p_t = 0.5$ 
+\item A probabilidade de ocorrência de cada termo em um documento relevante é a mesma, e então $p_t$ e $(1-p_t)$ são eliminados da expressão do $RSV$ 
 
-\item Weak estimate, but doesn't disagree violently with expectation that query terms appear in many but not all relevant documents
+\item É uma estimativa fraca, mas não conflita com a expectativa  de que os termos de consulta aparecem em muitos mas não todos os documentos relevantes
 
-\item Combining this method with the earlier approximation for $u_t$, the document ranking is determined simply by which query terms occur in documents scaled by their idf weighting 
+\item Combinando este método com a aproximação anterior para $u_t$, o rankeamento de documentos é determinado simplesmente por quais termos de consulta ocorrem nos documentos ajustados por seu peso idf
 
-\item For short documents (titles or abstracts) in one-pass retrieval situations, this estimate can be quite satisfactory
+\item Para documento curto (títulos ou resumos) em situações de recuperação simples, esta estimativa pode ser bem satisfatória
 \end{itemize}
 \end{frame}
 
