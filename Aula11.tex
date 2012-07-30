@@ -786,6 +786,187 @@ Estime a probabilidade de que os documentos acima são relevantes para a consult
 \end{itemize}
 \end{frame}
 
+\section{Conclusão&Extensões}
+\begin{frame}[<+->]
+\frametitle{História e sumário dos pressupostos}
+\pause[2]
+
+\begin{itemize}
+\item Dentre os modelos formais mais antigos de de RI
+\begin{itemize}
+\item Maron \& Kuhns, 1960: Uma vez que um sistema de RI não pode predizer com certeza  qual documento é relevante, devemos lidar com probabilidades
+\end{itemize}
+
+\item Pressupostos para obter aproximações razoáveis das probabilidades necessárias(no BIM):
+\begin{itemize}
+
+\item Representação Booleana de documentos/consutas/relevância
+
+\item Independência de termos
+
+\item Termos fora da consulta não afetam a recuperação
+
+\item Relevâncias de documentos são independentes
+\end{itemize}
+\end{itemize} 
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Quão diferentes são o modelo vetorial e o BIM?}
+\pause[2]
+
+\begin{itemize} 
+\item Não são tão diferentes.
+\item Nos dois você constroi um esquema de recuperação da mesma maneira.  
+\item Para RI probabilístico, no fim das contas, vc não pontua consultas não por similaridade (cosseno) e por tf-idf em um espaço vetorial, mas por uma fórmula ligeiramente diferente motivada pela teoria de probabilidade.
+\item Em seguida: como adicionar frequencia de termos e normalização de comprimento ao modelo probabilístico.
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Okapi BM25: Visão Geral}
+\pause[2]
+
+\begin{itemize} 
+\item O Okapi BM25 é um modelo probabilístico que incorpora frequência dos termos (ou seja, não é binário) e normalização de comprimento.
+\item O BIM foi concebido originalmente para catálogos curtos de comprimento similar, e funciona bem nestes contextos
+
+\item Para buscas de texto completo modernas, um modelo deve atentar à frequência de termos e ao comprimento do documento
+
+\item  BestMatch25 (também conhecido como \myblue{BM25} ou \myblue{Okapi}) é sensível a estas  grandezas
+
+\item O BM25 é um dos modelos de recuperação mais robustos e amplamente utilizados 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Okapi BM25}
+\pause
+
+\begin{itemize}
+\item O escore mais simples para o documento $d$ é simplesmente o peso idf dos termos de consulta presentes no documento:
+\end{itemize}
+\pause
+\begin{equation}
+\nonumber
+RSV_d = \sum_{t \in q} \log\frac{N}{\docf_t}
+\end{equation}
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Ponderação básica do Okapi BM25 }
+\pause[2]
+
+\begin{itemize}
+\item Melhora o idf do termo [log N/df] através da inclusão da frequência do termo e do comprimento do documento.
+\begin{equation}
+\nonumber
+RSV_d = \sum_{t \in q} \log\left[\frac{N}{\docf_t}\right]\cdot
+\frac{(k_1 + 1)\termf_{td}}
+{k_1 ((1-b) + b\times (L_d/\dlenave)) + \termf_{td}} 
+\end{equation}
+\item $\termf_{td}$: Frequência do termo no documento $d$
+\item $L_d$ ($\dlenave$): Comprimento do documento $d$ (Comprimento médio dos documentos na coleção inteira)
+\item $k_1$: Parâmetro de ajuste controlando a imfluência da frequencia do termo
+\item $b$: Parâmetro de ajuste controlando a influência do comprimento do documento 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercício}
+\pause[2]
+
+\begin{itemize}
+\item Interprete a fórmula de ponderação BM25 para $k_1 =0$ 
+\item Interprete a fórmula de ponderação BM25 para $k_1 =1$ e $b=0$
+\item Interprete a fórmula de ponderação BM25 para $k_1 \mapsto \infty$ e $b=0$
+\item Interprete a fórmula de ponderação BM25 para $k_1 \mapsto \infty$ e $b=1$
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Ponderação Okapi BM25 para consultas longas}
+\pause[2]
+
+\begin{itemize}
+\item Para consultas longas, use ponderação similar para os termos de busca
+\end{itemize}
+
+\begin{equation}
+\nonumber
+RSV_d = \sum_{t\in q} \left[\log\frac{N}{\docf_t}\right]
+\cdot
+\frac{(k_1+1)\termf_{td}}{k_1((1-b) + b \times (L_d/\dlenave))+\termf_{td}}
+\cdot
+\frac{(k_3 + 1)\termf_{tq}}{k_3 + \termf_{tq}} \label{bm25-3}
+\end{equation}
+\begin{itemize}
+\item $\termf_{tq}$: frequência do termo na consulta $q$
+\item $k_3$: parâmetro de ajuste controlando a importância frequência do termo na consulta
+
+\item Não há normalização de comprimento para consultas (pois a recuperação é feita com respeito a uma única consulta fixa)
+
+\item Os parâmetros de ajuste acima devem ser escolhidos de maneira a otimizar a performance  em uma coleção de teste. Na ausência de tal otimização, experimentos mostram que valores  razoáveis para $k_1$ e $k_3$ encontram-se entre  1.2 e 2 e $b = 0.75$
+\end{itemize}
+
+\end{frame}
+%\begin{frame}
+%\frametitle{Bayesian Network Approaches to IR}
+%Turtle \& Croft (1989,1991) introduced into information retrieval the use of \myblue{Bayesian networks}, a form of probabilistic graphical model. Conceptually, Bayesian networks use directed graphs to show probabilistic dependencies between variables, and have led to the development of sophisticated algorithms for propagating influence so as to allow learning and inference with arbitrary knowledge within arbitrary directed acyclic graphs.
+%Turtle and Croft used a sophisticated network to better model the complex dependencies between a document and a user's information need.
+
+
+%The model decomposes into two parts: a document collection network and a query network. The document collection network is large, but can be precomputed: it maps from documents to terms to concepts. The concepts are a thesaurus-based expansion of the terms appearing in the document. The query network is relatively small but a new network needs to be built each time a query comes in, and then attached to the document network. The query network maps from query terms, to query subexpressions (built using probabilistic or ``noisy'' versions of \oper{AND} and \oper{OR} operators), to the user's information need.
+
+%The result is a flexible probabilistic network which can generalize
+%various simpler Boolean and probabilistic models. Indeed, this is  the
+%primary case of a statistical ranked retrieval model that naturally supports
+%structured query operators.  The system allowed
+%efficient large-scale retrieval, and was the basis of the InQuery text
+%retrieval system, built at the University of Massachusetts.  This
+%system performed very well in TREC evaluations and for a time was sold commercially. On the other hand, the model still used various approximations and independence assumptions to make parameter estimation and computation possible. There has not been much follow-on work along these lines, but we would note that this model was actually built very early on in the modern era of using Bayesian networks, and there have been many subsequent developments in the theory, and the time is perhaps right for a new generation of Bayesian network-based information retrieval systems.
+
+%\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Qual Modelo de Rankeamento Devo Usar?}
+\pause[2]
+
+\begin{itemize}
+\item Quero algo básico e simples $\rightarrow$ use o modelo vetorial com ponderação tf-idf.
+\item Quero usar um modelo de rankeamento ``estado-da-arte'' com ótima performance $\rightarrow$ use modelos de linguagem com BM25 e \myblue{parâmetros ajustados}
+\item Algo intermediário: BM25 ou modelos de linguagem sem ajuste ou com apenas um parâmetro ajustado
+
+\end{itemize}
+
+
+\end{frame}
+
+
+\againframe<2>{takeaway}
+
+\begin{frame}
+\frametitle{Material extra}
+\begin{itemize}
+\item Capítulo 11 do IIR
+\item Resources at
+\url{http://ifnlp.org/ir}
+%\begin{itemize}
+%\item Weka: A data mining software package that includes an
+%implementation of Naive Bayes
+%\item Reuters-21578 -- the most famous text classification
+%evaluation set (but now it's too small for realistic experiments)
+%\end{itemize}
+\end{itemize}
+\end{frame}
 
 
 \end{document}
