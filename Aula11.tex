@@ -1,0 +1,972 @@
+ 
+\documentclass[compress]{beamer}
+\usetheme{Warsaw}
+\usecolortheme{crane}
+%%%Xelatex section
+\usepackage{ifxetex}
+\ifxetex
+\usepackage{xltxtra}
+\usepackage{polyglossia}
+\setdefaultlanguage[⟨options⟩]{brazil}
+\usepackage{fontspec,lipsum}
+\defaultfontfeatures{Ligatures=TeX}
+%\setromanfont{Georgia}
+%\setsansfont{Tahoma}
+%%%%
+\else
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\fi
+\usepackage{url}
+\usepackage{default}
+\usepackage{xcolor}
+\usepackage{newalg}
+\usepackage{pstricks,pst-node,pst-plot,pst-tree}
+
+\definecolor{texblue}{rgb}{0, 0, 1} 
+\def\myblue#1{\textcolor{texblue}{#1}}
+\definecolor{texred}{rgb}{1, 0, 0} 
+\def\myred#1{\textcolor{texred}{#1}}
+\definecolor{texgreen}{rgb}{0, 1, 0} 
+\definecolor{texgreen}{rgb}{0.2,0.6,0.2}
+\def\mygreen#1{\textcolor{texgreen}{#1}}
+\def\term#1{{\sc #1}}   % IR terms in examples not index terms!
+\def\query#1{{\sf #1}}
+\def\oper#1{{\sc #1}} % AND, OR, NOT
+%%% Hinrich pstricks stuff
+
+\newcommand{\Xeasquare}[3][]{\fnode[#1]{#2}{#3}}
+\newcommand{\Xeanode}[3][]{\circlenode[#1]{#2}{#3}}
+\newcommand{\XeaFnode}[2]{\circlenode[doubleline=true]{#1}{#2}}
+\newcommand{\Xeatrans}[4][]{\ncline[#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xeaarc}[4][8]{\ncarc[arcangleA=#1, arcangleB=#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xeacurve}[4][]{\nccurve[#1]{->}{#2}{#3}\mput*{#4}}
+\newcommand{\Xealoop}[3][angleA=-30, angleB=30]{\nccurve[ncurv=4, #1]{->}{#2}{#2}\Bput*{#3}}
+\newcommand{\Xeastart}[1]{\ncdiag[angleA=180, angleB=180, arm=.5, arrowsize=4pt 4]{->}{#1}{#1}}
+\newcommand{\eaStateName}{d}
+\newcommand{\eanode}[2][]{\Xeanode[#1]{q#2}{${\eaStateName}_{#2}$}}
+\newcommand{\easquare}[2][]{\Xeasquare[#1]{q#2}{${\eaStateName}_{#2}$}}
+\newcommand{\eaFnode}[1]{\XeaFnode{q#1}{${\eaStateName}_{#1}$}}
+\newcommand{\eatrans}[4][]{\Xeatrans[#1]{q#2}{q#3}{#4}}
+\newcommand{\eaarc}[4][8]{\Xeaarc[#1]{q#2}{q#3}{#4}}
+\newcommand{\eacurve}[4][]{\Xeacurve[#1]{q#2}{q#3}{#4}}
+\newcommand{\ealoop}[3][angleA=-30, angleB=30]{\Xealoop[#1]{q#2}{#3}}
+\newcommand{\eastart}[1]{\Xeastart{q#1}}
+\long\def\eateat#1{\ignorespaces}
+
+
+\title[Recuperação Probabilística\hspace{2em}\insertframenumber/\inserttotalframenumber]
+{Sistemas de Recuperação de Informação\\
+\large \url{https://github.com/fccoelho/curso-IRI}\\[0.5cm]
+IRI 11: Recuperação de Informação Probabilística}
+
+\author [Coelho F.C. \& Souza R.R.]{ Flávio Codeço Coelho}
+
+\institute [EMAp, FGV]{Escola de Matemática Aplicada,   Fundação Getúlio Vargas}
+\date
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Sumário da Aula}
+\tableofcontents
+\end{frame}
+
+\section{Recapitulação}
+
+\begin{frame}
+\frametitle{Revisão de relevância: Ideia básica}
+
+\begin{itemize}
+\item O usuário faz uma consulta simples, curta.
+\item O buscador retorna um conjunto de documentos.
+\item O usuário marca alguns documentos como relevantes outros não.
+\item Buscador computa nova representação da informação requerida -- deve ser melhor que a consulta inicial.
+\item Buscador executa nova consulta e retorna resultados.
+\item Novos resultados apresentação melhor revocação (espera-se).
+\end{itemize}
+\end{frame}
+
+\frame{
+\frametitle{Rocchio}
+
+\psset{unit=0.175cm}
+
+
+\begin{pspicture}(5,5)(45,36)
+\psaxes[labels=none,ticks=none,arrowscale=3,linewidth=0.02cm]{->}(15,10)(45,36)
+
+%\showgrid
+%\psgrid[subgriddiv=0](0,2)(55,36)
+
+\pscircle( 30 ,11  ){0.428}
+\pscircle( 30 ,13  ){0.428}
+\pscircle( 30 ,15  ){0.428}
+\pscircle( 30 ,17  ){0.428}
+\pscircle( 30 ,23  ){0.428}
+\pscircle( 30 ,25  ){0.428}
+\pscircle( 30 ,27  ){0.428}
+\pscircle( 30 ,29  ){0.428}
+\pscircle( 33 ,20  ){0.428}
+\pscircle( 27 ,20  ){0.428}
+
+\rput( 40 ,25  ){{ x}}
+\rput( 40 ,15  ){{ x}}
+\rput( 40 ,23  ){{ x}}
+\rput( 40 ,17  ){{ x}}
+\rput( 43 ,20  ){{ x}}
+\rput( 37 ,20  ){{ x}}
+
+%\pscircle*(40,20){0.711}
+%\pscircle*(30,20){0.711}
+
+\visible<2,3,5-9>{
+\psline{->,arrowscale=2,linewidth=0.03cm}(15,10)(30,20)
+\rput(21,16){\small $\vec{\mu}_{R}$}
+}
+
+\visible<4,5-9>{
+\psline{->,arrowscale=2,linewidth=0.03cm}(15,10)(40,20)
+\rput(25,12){\small $\vec{\mu}_{NR}$}
+}
+
+\visible<6-9>{
+\psline{->,arrowscale=2,linewidth=0.03cm}(40,20)(30,20)
+\rput(35,23){\small $\vec{\mu}_{R}-\vec{\mu}_{NR}$}
+}
+\visible<7-9>{\psline{->,arrowscale=2,linewidth=0.03cm}(30,20)(20,20)}
+\visible<8-10>{
+\psline{->,arrowscale=2,linewidth=0.03cm}(15,10)(20,20)
+\rput(20,22){\small $\vec{q}_{opt}$}
+}
+
+\end{pspicture}
+
+}
+
+
+\begin{frame}
+\frametitle{Tipos de expansão de consulta}
+%\pause[2]
+\begin{itemize}
+\item Tesauro manual (mantido por editores, p.ex., PubMed)
+\item Tesauro derivado automaticamente (p.ex., baseado em estatísticas de co-ocurrence statistics)
+\item Query-equivalence based on query log mining (common on
+  the web as in the ``palm'' example)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Expansão de Consulta em Buscadores}
+%\pause[2]
+\begin{itemize}
+\item Fonte principal de expansões de consulta em buscadores: logs de consulta
+\item Exemplo 1: Depois de consultar por [herbal], usuários frequentemente buscam por [remédio herbal].
+\begin{itemize}
+\item $\rightarrow$ 
+``remédio herbal'' é uma expansão em potencial para ``herbal'' ou ``erva''.
+\end{itemize}
+
+\item Exemplo 2: Usuários buscando por [fotos de flores] frequentemente clicam na URL \myblue{photobucket.com/flor}. 
+Usuários buscando por [desenhos de flor]
+  frequentemente clicam na \myblue{mesma URL}.
+\begin{itemize}
+\item $\rightarrow$ 
+``desenhos de flor'' e ``fotos de flor'' São potencialmente extensões uma da outra.
+\end{itemize}
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[Conclusão de Hoje]
+
+\frametitle{Conclusão de Hoje}
+\begin{itemize}
+\item Abordagem probabilistica a RI
+\item Principio de Rankeamento de probabilidade
+\item Modelos: BIM, BM25
+\item Pressupostos destes modelos
+\end{itemize}
+\end{frame}
+
+\section{Abordagem Probabilística à RI}
+\begin{frame}[<+->]
+\frametitle{Feedback de Relevância}
+\pause[2]
+\begin{itemize}
+
+\item No feedback de relevância, o usuário marca documentos como relevantes ou irrelevantes
+
+\item Dados alguns documentos conhecidos como relevantes e irrelevantes, computamos pesos para termos que não constam da consulta e que indicam quão provável é a sua ocorrência em documentos relevantes.
+
+\item Hoje: desenvolver uma abordagem probabilística para relevância e também um modelo probabilístico genérico para RI
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Abordagem Probabilística à Recuperação}
+\pause[2]
+
+
+\begin{itemize}
+\item Da uma necessidade informacional de um usuário (representada como uma consulta) e uma coleção de documentos (transformados em representações de documentos), um sistema deve determinar quão bem os documentos satisfazem a consulta
+\begin{itemize}
+
+\item  Um sistema de RI tem uma \myblue{compreensão incerta} da consulta do usuário, e pode \myblue{``chutar''} se um documento satisfaz à consulta. 
+\end{itemize}
+
+\item A teoria da Probabilidade provê os fundamentos para tal \myblue{raciocínio sob incerteza} 
+\begin{itemize}
+\item Modelos Probabilísticos exploram estes fundamentos para estimar quão provável  é a relevância de um documento para uma consulta
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Modelos de RI Probabilísticos -- visão geral}
+\pause[2]
+\begin{itemize}
+\item Modelo clássico de recuperação Probabilística
+\begin{itemize}
+\item Princípio de rankeamento de probabilidade
+\begin{itemize}
+\item Modelo de independência binária, BestMatch25 (Okapi)
+\end{itemize}
+\end{itemize}
+\item Redes Bayesianas para recuperação de texto
+\item Abordagem de modelo de linguagem para RI
+\begin{itemize}
+  \item Importante, será discutido adiante
+\end{itemize}
+\item Métodos probabilísticos estão entre os mais antigos, mas são um tema quente em RI
+\end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Exercício: Modelo Probabilístico vs.\ outros modelos}
+\pause[2]
+\begin{itemize}
+\item Modelo booleano
+\begin{itemize}
+\item Modelos probabilísticos suportam rankeamento e portanto são melhores que o modelo booleano simples.
+\end{itemize}
+\item Modelo de espaço vetorial
+\begin{itemize}
+\item O Modelo de espaço vetorial também suporta rankeamento.
+\item Porque buscar uma alternativa ao modelo de espaço vetorial?
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Modelo Probabilístico vs.\ Espaço Vetorial}
+\pause[2]
+\begin{itemize}
+\item Modelo de espaço vetorial: rankeia documentos de acordo com similaridade com a consulta.
+\item A noção de similaridade não se traduz diretamente em relevância
+\item O documento de maior similaridade pode ser altamente relevante ou completamente irrelevante.
+\item A teoria da probabilidade é uma formalização mais elegante do que desejamos de um sistema de RI: Retornar documentos relevantes ao usuário.
+\end{itemize}
+\end{frame}
+
+\section{Probabilidade Básica}
+\begin{frame}[<+->]
+\frametitle{Probabilidade Básica}
+\pause[2]
+
+\begin{itemize}
+\item Para eventos $A$ e $B$
+\begin{itemize}
+\item A probabilidade conjunta $P(A \cap B)$   
+
+\item A probabilidade condicional $P(A|B)$ do evento $A$ ocorrer dado que o evento $B$ também tenha ocorrido.
+\end{itemize}
+
+\item \myblue{Regra da cadeia}: relação fundamental entre probabilidade conjunta e condicional:
+\begin{equation}
+\nonumber
+P(A B) = P(A \cap B) = P(A|B)P(B) = P(B|A)P(A) 
+\end{equation}
+
+
+\item Similarly for the  complement of an event $P(\overline{A})$:
+\begin{equation}
+\nonumber
+P(\overline{A}B) = P(B| \overline{A})P(\overline{A})
+\end{equation}
+
+\item \myblue{Regra da Probabilidade total}: Se $B$ pode ser dividido em uma partição de subconjuntos, então $P(B)$ é a soma das probabilidades dos conjuntos .  Um caso especial desta regra é:
+\begin{equation}
+\nonumber
+P(B) = P(AB) + P(\overline{A} B)
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Probabilidade Básica}
+\pause
+
+%\begin{itemize}
+%\item 
+\myblue{Regra de Bayes} para inverter probabilidades condicionais:
+%\end{itemize}
+\begin{equation}
+\nonumber
+P(A|B) = \frac{P(B|A)P(A)}{P(B)} = \left[\frac{P(B|A)}{\sum_{X \in \{ A, \overline{A}\}} P(B|X)P(X)}\right]P(A)
+\end{equation}
+
+\pause
+Pode ser vista como uma forma de atualizar probabilidades:  
+\begin{itemize}
+\pause
+\item Começa com a probabilidade \myblue{a priori} $P(A)$ (estimativa inicial de quão provável é um evento $A$ na ausência de outra informação)
+
+\pause
+\item A \myblue{probabilidade posterior} $P(A|B)$ depois de considerarmos a evidência $B$, baseada na verossimilhança de $B$ ocorrer nos dois casos em que $A$ ocorre ou não
+\end{itemize}
+
+\pause
+\myblue{Odds} (chance) de um evento nos dá um tipo de multiplicador para como as probabilidades variam:
+\begin{equation}
+\nonumber
+\mbox{Odds:\qquad } O(A) = \frac{P(A)}{P(\overline{A})} = \frac{P(A)}{1 - P(A)}\label{O-notation}
+\end{equation}
+\end{frame}
+
+\section{Princípio de Rankeamento de Probabilidade}
+\begin{frame}[<+->]
+\frametitle{O Problema do Rankeamento de Documentos}
+\pause[2]
+
+\begin{itemize}
+\item Recuperação Rankeada : Dada uma coleção de documentos, o usuário realiza uma consulta que retorna uma lista ordenada de documentos
+
+\item Assumindo noção binária de relevância: $R_{d,q}$ é uma variável aleatória dicotômica, tal que
+\begin{itemize} 
+
+\item $R_{d,q}=1$ se o documento $d$ é relevante com respeito à consulta $q$ %Often we write just $R$ for $R_{d,q}$
+\item $R_{d,q}=0$ caso contrário  
+\end{itemize}
+
+\item O rankeamento probabilístico ordena os documentos em ordem decrescente de relevância estimada com respeito à consulta: $P(R=1|d,q)$
+
+\item Assume que a relevância de cada documento é independente da relevância de outros documentos
+
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Princípio do Rankeamento de Probabilidade (PRP)}
+\pause[2]
+
+\begin{itemize}
+\item PRP resumidamente 
+\begin{itemize}	
+\item Se os documentos recuperados são rankeados decrescentemente com sua probabilidade de relevância, então a efetividade do sistema será a melhor possível.
+\end{itemize}
+\end{itemize}
+\begin{itemize}
+\item PRP em detalhes
+\begin{itemize}
+\item Se a resposta do sistema a cada consulta for um rankeamento dos documentos em ordem decrescente de probabilidade de relevância para a consulta, \myblue{Onde as probabilidades são estimadas com o máximo de acurácia possível, utilizando toda a informação disponível} 
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Modelo de Independência Binário (BIM)}
+\pause[2]
+
+\begin{itemize}
+\item Tradicionalmente usado com o PRP
+\end{itemize}
+
+Pressupostos:  
+\begin{itemize}
+\item `Binário' (equivalente ao booleano): documentos e consultas representados vetores de incidência binários
+\begin{itemize}
+
+\item P.Ex., documento $d$ representado pelo vetor $\vec{x} = (x_1, \ldots, x_M)$, onde $x_t = 1$ se o termo $t$ ocorre em $d$ e $x_t = 0$ em caso contrário.
+\item Documentos diferentes podem ter a mesma representação vetorial
+%\item Similarly, we represent $q$ by the incidence vector $\vec{q}$
+\end{itemize}
+
+\item  `Independência': não há associação entre termos
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink=15]
+\frametitle{Matriz de Incidência Binária}
+
+\begin{tabular}{@{}lccccccc@{}}
+ & Anthony  & Julius & The  & Hamlet &
+ Othello & Macbeth & \ldots \\
+ & and  & Caesar & Tempest &  &  &  &  \\
+ & Cleopatra \\
+\term{Anthony} &    1 & 1 & 0 & \myblue{0} & 0 & 1 & \\
+\term{Brutus} &     1 & 1 & 0 & \myblue{1} & 0 & 0 & \\
+\term{Caesar} &     1 & 1 & 0 & \myblue{1} & 1 & 1 & \\
+\term{Calpurnia} &  0 & 1 & 0 & \myblue{0} & 0 & 0 & \\
+\term{Cleopatra} &  1 & 0 & 0 & \myblue{0} & 0 & 0 & \\
+\term{mercy} &      1 & 0 & 1 & \myblue{1} & 1 & 1 & \\
+\term{worser} &     1 & 0 & 1 & \myblue{1} & 1 & 0 & \\
+\ldots
+\end{tabular}
+
+
+\bigskip
+
+Cada Documento é representado por um \myblue{vector binário} $\in \{0,1\}^{|V|}$.
+
+
+\end{frame}
+
+
+
+\begin{frame}[<+->]
+\frametitle{Modelo de Independência Binária}
+\pause[2]
+
+Para tornar precisa uma estratégia de recuperação probabilística, precisamos estimar como os termos do documento contribuem para sua relevância
+\begin{itemize}
+
+\item Precisamos encontrar estatísticas mensuráveis (frequência do termo, frequência de documentos, comprimento do documento ) que afetem a relevância de um documento
+
+\item Combinar estas estatísticas para estima a probabilidade da relevância do documento: $P(R|d,q)$ 
+
+\item Como fazemos isso?
+
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Modelo de Independência Binária}
+\pause[2]
+
+ $P(R|d,q)$  é modelada como vetores de incidência de termos: $P(R|\vec{x}, \vec{q})$
+\begin{eqnarray}
+\nonumber
+P(R=1|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=1, \vec{q})P(R=1|\vec{q})}{P(\vec{x}|\vec{q})} \label{Rxq-bayes} \\
+P(R=0|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=0, \vec{q})P(R=0|\vec{q})}{P(\vec{x}|\vec{q})} \nonumber
+\end{eqnarray}
+\begin{itemize}
+
+\item $P(\vec{x}|R=1,\vec{q})$ e $P(\vec{x}|R=0,\vec{q})$: probabilidade de que se um documento relevante ou irrelevante é recuperado, então a representação do documento é $\vec{x}$
+\item Usar estatísticas acerca da coleção de documentos para estimar estas probabilidades
+\end{itemize}
+\end{frame}
+\begin{frame}
+
+\frametitle{Modelo de Independência Binária}
+
+$P(R|d,q)$  é modelada como vetores de incidência de termos: $P(R|\vec{x}, \vec{q})$
+\begin{eqnarray}
+\nonumber
+P(R=1|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=1, \vec{q})P(R=1|\vec{q})}{P(\vec{x}|\vec{q})} \label{Rxq-bayes2} \\
+P(R=0|\vec{x}, \vec{q}) &=& \frac{P(\vec{x}|R=0, \vec{q})P(R=0|\vec{q})}{P(\vec{x}|\vec{q})} \nonumber
+\end{eqnarray}
+\begin{itemize}
+\pause
+\item $P(R=1|\vec{q})$ e $P(R=0|\vec{q})$: probabilidade \textit{a priori} de recuperar um documento relevante ou irrelevante para uma consulta $\vec{q}$
+\pause
+\item Estimar $P(R=1|\vec{q})$ e $P(R=0|\vec{q})$ a partir da percentagem de documentos relevantes na coleção
+\pause
+\item Uma vez que um documento é ou relevante ou irrelevante para uma consulta, temos que:
+\pause
+\begin{equation}
+\nonumber
+P(R=1|\vec{x}, \vec{q}) + P(R=0|\vec{x},\vec{q}) = 1
+\end{equation}
+\end{itemize}
+\end{frame}
+\begin{frame}
+\frametitle{Encontrando uma função de rankeamento para termos de busca(1)}
+\pause[2]
+
+\begin{itemize}
+\item Dada uma consulta $q$, rankear documentos por $P(R=1|d,q)$ é modelado no BIM como rankear por $P(R=1|\vec{x},\vec{q})$
+
+\item Mais fácil: rankear documentos por seus odds de relevância (dado o mesmo rankeamento)
+\begin{eqnarray}
+\nonumber
+O(R|\vec{x},\vec{q})
+= \frac{P(R=1|\vec{x},\vec{q})}{P(R=0|\vec{x},\vec{q})}
+= \frac{\frac{P(R=1|\vec{q})P(\vec{x}|R=1,\vec{q})}{P(\vec{x}|\vec{q})}}{\frac{P(R=0|\vec{q})P(\vec{x}|R=0,\vec{q})}{P(\vec{x}|\vec{q})}}\\
+\nonumber
+ = \frac{P(R=1|\vec{q})}{P(R=0|\vec{q})}\cdot \frac{P(\vec{x}|R=1,\vec{q})}{P(\vec{x}|R=0,\vec{q})} 
+\end{eqnarray}
+
+\item $\frac{P(R=1|\vec{q})}{P(R=0|\vec{q})}$ é constante para uma dada consulta - pode ser ignorado
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Encontrando uma função de rankeamento para termos de busca (2)}
+\pause[2]
+
+É neste ponto que aceitamos o pressuposto de \myblue{independência condicional do Naive Bayes} segundo o qual a presença ou ausência de uma palavra em um documento é independente da presença ou ausência de qualquer outra palavra (dada a consulta):
+
+\begin{equation}
+\nonumber
+\frac{P(\vec{x}|R=1,\vec{q})}{P(\vec{x}|R=0,\vec{q})} = \prod_{t=1}^M
+\frac{P(x_t|R=1,\vec{q})}{P(x_t|R=0,\vec{q})}
+\end{equation}
+
+logo:
+\begin{equation}
+\nonumber
+O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot \prod_{t=1}^M
+\frac{P(x_t|R=1,\vec{q})}{P(x_t|R=0,\vec{q})}
+\end{equation}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Exercício}
+\pause[2]
+
+Pressuposto de independência condicional do Naive Bayes:  a presença ou ausência de uma palavra em um documento é independente da presença ou ausência de qualquer outra palavra (dada a consulta).
+
+\pause
+
+\myblue{Porquê isto está errado? cite um bom exemplo? }
+
+\pause
+
+PRP assume que a relevância de cada documento é independente da relevância dos outros documentos.
+
+\pause
+
+\myblue{Porquê isto está errado? cite um bom exemplo?}
+
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Encontrando uma função de rankeamento para termos de busca (3)}
+\pause
+
+Uma vez que cada $x_t$ é 0 ou 1, podemos separar os termos:
+\pause
+\begin{equation}
+\nonumber
+O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
+\prod_{t: x_t=1}
+\frac{P(x_t=1|R=1,\vec{q})}{P(x_t=1|R=0,\vec{q})} \cdot
+\prod_{t: x_t=0}
+\frac{P(x_t=0|R=1,\vec{q})}{P(x_t=0|R=0,\vec{q})}
+\end{equation}
+
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Encontrando uma função de rankeamento para termos de busca (4)}
+\pause
+\begin{itemize}
+\item Seja $p_t = P(x_t=1|R=1,\vec{q})$ a probabilidade de um termo aparecer em um documento relevante
+\pause
+\item Seja $u_t = P(x_t = 1|R=0,\vec{q})$ a probabilidade de um termo aparecer em um documento irrelevante
+
+\pause
+\item Representando essas probabilidades em uma tabela de contingência:
+\end{itemize}
+
+\bigskip
+
+\begin{tabular}[t]{|cc|cc|}
+\hline
+             & documento & relevante ($R=1$) & irrelevante ($R=0$) \\ \hline
+Termo presente & $x_t = 1$ & $p_t$ & $u_t$  \\
+Termo ausente  & $x_t = 0$ & $1-p_t$ & $1-u_t$ \\ \hline
+\end{tabular}
+
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Encontrando uma função de rankeamento para termos de busca}
+\pause[2]
+
+Pressuposto simplificador adicional: termos que não ocorrem na consulta são igualmente prováveis de ocorrer em documentos relevantes ou irrelevantes
+\begin{itemize}
+\item Se $q_t = 0$, então $p_t = u_t$
+\end{itemize} 
+
+Agora precisamos apenas considerar termos nos produtos que aparecem na consulta:
+\begin{equation}
+\nonumber
+O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
+\prod_{t: x_t = q_t =1}
+\frac{p_t}{u_t} \cdot
+\prod_{t: x_t=0,q_t=1}
+\frac{1-p_t}{1-u_t}
+\end{equation}
+\begin{itemize}
+
+\item O produto da esquerda é sobre os termos de consulta encontrados no documento, e o produto da direita é sobre termos de consulta não encontrados no documento
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Encontrando uma função de rankeamento para termos de busca}
+\pause[2]
+
+Incluindo os termos de consulta encontrados no documento no produto da direita, mas   ao mesmo tempo dividindo o produto da esquerda por eles, obtemos:
+\begin{equation}
+\nonumber
+O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
+\prod_{t: x_t = q_t =1}
+\frac{p_t(1-u_t)}{u_t(1-p_t)} \cdot
+\prod_{t: q_t=1}
+\frac{1-p_t}{1-u_t}
+\end{equation}
+
+\begin{itemize}
+\item O produto da esquerda continua a ser so bre os termos encontrados no documento, mas o da direita agora é sobre todos os termos de consulta, que é contante para uma dada consulta e pode ser ignorado. 
+
+\item $\rightarrow$ \myblue{A única quantidade que precisa ser estimada para rankear documentos com respeito a uma consulta, é o produto da esquerda} 
+
+%We can equally rank documents by the logarithm of this term, since log is a monotonic function. 
+
+\item Daí vem o  \myblue{Valor de status de Recuperação} (RSV) neste modelo:
+\begin{equation}
+\nonumber
+RSV_d = \log \prod_{t: x_t = q_t =1} \frac{p_t(1-u_t)}{u_t(1-p_t)} =
+\sum_{t: x_t = q_t =1} \log \frac{p_t(1-u_t)}{u_t(1-p_t)}
+\end{equation}
+\end{itemize}
+\end{frame}
+\begin{frame}[<+->]
+\frametitle{Encontrando uma função de rankeamento para termos de busca}
+\pause[2]
+
+Equivalente: rankear documentos usando o \myblue{log da razão de odds} para os termos na consulta $c_t$:
+\begin{equation}
+\nonumber
+c_t = \log \frac{p_t(1-u_t)}{u_t(1-p_t)} = \log \frac{p_t}{(1-p_t)} - \log \frac{u_t}{1-u_t}
+\end{equation}
+\begin{itemize}
+
+\item A  \myblue{razão de odds } (ou razão de chances) é a razão de dois odds: (i) os odds do termo aparecer se o documento for relevante ($p_t/(1-p_t)$), e (ii)
+os odds do termo aparecer se o documento for irrelevante ($u_t/(1-u_t)$) %The \myblue{log odds ratio} is the log of that quantity.
+
+\item $c_t$ = 0: Termo tem odds iguais de aparecer em docs relevantes e irrelevantes
+\item $c_t$ positivo: odds mais altos de aparecer em documentos relevantes
+\item $c_t$ negativo: odds mais altos de aparecer em documentos irrelevantes
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Peso de termo $c_t$ no  BIM}
+\pause[2]
+
+\begin{itemize}
+\item $c_t=\log \frac{p_t}{(1-p_t)} - \log \frac{u_t}{1-u_t}$ funciona como peso para o termo.
+\item RSV parap documento $d$: $RSV_d =
+\sum_{x_t=q_t=1} c_t$.  
+\item O BIM e o modelo de espaço vetorial são idênticos no nível operacional\ldots
+\item \ldots exceto que os pesos dos termos são diferentes.
+\item Ou seja: podemos usar as mesmas estruturas de dados (indices invertidos, etc.) para os dois modelos.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Como Estimar Probabilidades}
+\pause[2]
+
+para cada termo $t$ em uma consulta, estimamos $c_t$ em toda a coleção usando uma tabela de contingência de contagens de documentos na coleção onde $\docf_t$ 'e o número de documentos que contem o termo $t$:
+%
+\begin{tabular}[t]{|cc|cc|c|}
+\hline
+             & documentos & relevante & irrelevante & Total \\ \hline
+Termo presente & $x_t = 1$ & $s$ & $\docf_t-s$ & $\docf_t$ \\
+Termo ausente & $x_t = 0$ & $S-s$ & $(N-\docf_t)-(S-s)$ & $N-\docf_t$ \\ \hline
+             & Total & $S$ & $N-S$ & $N$ \\ \hline
+\end{tabular}
+
+%
+\begin{equation}
+\nonumber
+ p_t = s/S  
+\end{equation}
+\begin{equation}
+\nonumber
+u_t = (\docf_t-s)/(N-S) 
+\end{equation}
+\begin{equation}
+\nonumber
+c_t = K(N,\docf_t,S,s) = \log\frac{s/(S-s)}{(\docf_t-s)/((N-\docf_t)-(S-s))}  
+\end{equation}
+
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Evitando zeros}
+\pause[2]
+
+\begin{itemize}
+\item Se qualquer das contagens for zero, o peso do termo é mal-definido.
+\item Estimativas de máxima verossimilhança não funcionam para eventos raros.
+\item Para evitar zeros: \myblue{adicione 0.5 a cada contagem}
+  (Estimação por verossimilhança esperada = ELE)
+\item Por exemplo, use $S-s+0.5$ na fórmula para $S-s$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercício}
+\pause
+
+\begin{itemize}
+\item Consulta: \texttt{Obama health plan}
+\item Doc1: \texttt{Obama rejects allegations about his own bad health}
+\item Doc2: \texttt{The plan is to visit Obama}
+\item Doc3: \texttt{Obama raises concerns with US health plan reforms}
+\end{itemize}
+\pause
+Estime a probabilidade de que os documentos acima são relevantes para a consulta. Use uma tabela de contingência. Estes são os únicos três documentos na coleção
+\end{frame} 
+
+\begin{frame}[<+->]
+\frametitle{Pressuposto Simplificador}
+\pause[2]
+
+\begin{itemize}\item Assumindo que documentos relevantes são uma fração bem pequena da coleção, aproxime estatísticas para documentos irrelevantes a partir de estatísticas da coleção completa
+
+\item Por conseguinte, $u_t$ (a probabilidade de ocorrência do termo em documentos irrelevantes para uma dada consulta) é $\docf_t/N$ e
+\begin{equation}
+\nonumber
+\log [(1-u_t)/u_t] = \log [(N-\docf_t)/\docf_t] \approx \log N/\docf_t 
+\end{equation}
+
+\item Esta equação deve parecer familiar \ldots
+
+\item A aproximação acima não pode ser facilmente estendida para documentos relevantes
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[<+->]
+\frametitle{Estimativas de probabilidade em feedback de relevância}
+\pause[2]
+
+\begin{itemize}
+\item Estatísticas de documentos relevantes ($p_t$) no feedback de relevância pode ser estimado por meio de máxima verossimilhança ou ELE(adicionndo 0.5)
+\begin{itemize}
+\item Use a frequência de ocorrência de termos em documentos conhecidamente relevantes. 
+\end{itemize}
+\item Esta é a base das abordagens probabilísticas para feedback de relevância 
+\item O exercício que acabamos de fazer foi um exercício de feedback de relevância uma vez que assumimos a disponibilidade de julgamentos de relevância.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Estimativas de Probabilidade em Recuperação adhoc }
+\pause[2]
+
+\begin{itemize}
+\item Recuperação Ad-hoc: não há feedback de relevância pelo usuário
+\item Neste caso: assuma que $p_t$ é constante para todos os termos $x_t$ na consulta e que  $p_t = 0.5$ 
+\item A probabilidade de ocorrência de cada termo em um documento relevante é a mesma, e então $p_t$ e $(1-p_t)$ são eliminados da expressão do $RSV$ 
+
+\item É uma estimativa fraca, mas não conflita com a expectativa  de que os termos de consulta aparecem em muitos mas não todos os documentos relevantes
+
+\item Combinando este método com a aproximação anterior para $u_t$, o rankeamento de documentos é determinado simplesmente por quais termos de consulta ocorrem nos documentos ajustados por seu peso idf
+
+\item Para documento curto (títulos ou resumos) em situações de recuperação simples, esta estimativa pode ser bem satisfatória
+\end{itemize}
+\end{frame}
+
+\section{Conclusão&Extensões}
+\begin{frame}[<+->]
+\frametitle{História e sumário dos pressupostos}
+\pause[2]
+
+\begin{itemize}
+\item Dentre os modelos formais mais antigos de de RI
+\begin{itemize}
+\item Maron \& Kuhns, 1960: Uma vez que um sistema de RI não pode predizer com certeza  qual documento é relevante, devemos lidar com probabilidades
+\end{itemize}
+
+\item Pressupostos para obter aproximações razoáveis das probabilidades necessárias(no BIM):
+\begin{itemize}
+
+\item Representação Booleana de documentos/consutas/relevância
+
+\item Independência de termos
+
+\item Termos fora da consulta não afetam a recuperação
+
+\item Relevâncias de documentos são independentes
+\end{itemize}
+\end{itemize} 
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Quão diferentes são o modelo vetorial e o BIM?}
+\pause[2]
+
+\begin{itemize} 
+\item Não são tão diferentes.
+\item Nos dois você constroi um esquema de recuperação da mesma maneira.  
+\item Para RI probabilístico, no fim das contas, vc não pontua consultas não por similaridade (cosseno) e por tf-idf em um espaço vetorial, mas por uma fórmula ligeiramente diferente motivada pela teoria de probabilidade.
+\item Em seguida: como adicionar frequencia de termos e normalização de comprimento ao modelo probabilístico.
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Okapi BM25: Visão Geral}
+\pause[2]
+
+\begin{itemize} 
+\item O Okapi BM25 é um modelo probabilístico que incorpora frequência dos termos (ou seja, não é binário) e normalização de comprimento.
+\item O BIM foi concebido originalmente para catálogos curtos de comprimento similar, e funciona bem nestes contextos
+
+\item Para buscas de texto completo modernas, um modelo deve atentar à frequência de termos e ao comprimento do documento
+
+\item  BestMatch25 (também conhecido como \myblue{BM25} ou \myblue{Okapi}) é sensível a estas  grandezas
+
+\item O BM25 é um dos modelos de recuperação mais robustos e amplamente utilizados 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Okapi BM25}
+\pause
+
+\begin{itemize}
+\item O escore mais simples para o documento $d$ é simplesmente o peso idf dos termos de consulta presentes no documento:
+\end{itemize}
+\pause
+\begin{equation}
+\nonumber
+RSV_d = \sum_{t \in q} \log\frac{N}{\docf_t}
+\end{equation}
+
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Ponderação básica do Okapi BM25 }
+\pause[2]
+
+\begin{itemize}
+\item Melhora o idf do termo [log N/df] através da inclusão da frequência do termo e do comprimento do documento.
+\begin{equation}
+\nonumber
+RSV_d = \sum_{t \in q} \log\left[\frac{N}{\docf_t}\right]\cdot
+\frac{(k_1 + 1)\termf_{td}}
+{k_1 ((1-b) + b\times (L_d/\dlenave)) + \termf_{td}} 
+\end{equation}
+\item $\termf_{td}$: Frequência do termo no documento $d$
+\item $L_d$ ($\dlenave$): Comprimento do documento $d$ (Comprimento médio dos documentos na coleção inteira)
+\item $k_1$: Parâmetro de ajuste controlando a imfluência da frequencia do termo
+\item $b$: Parâmetro de ajuste controlando a influência do comprimento do documento 
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercício}
+\pause[2]
+
+\begin{itemize}
+\item Interprete a fórmula de ponderação BM25 para $k_1 =0$ 
+\item Interprete a fórmula de ponderação BM25 para $k_1 =1$ e $b=0$
+\item Interprete a fórmula de ponderação BM25 para $k_1 \mapsto \infty$ e $b=0$
+\item Interprete a fórmula de ponderação BM25 para $k_1 \mapsto \infty$ e $b=1$
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}[<+->]
+\frametitle{Ponderação Okapi BM25 para consultas longas}
+\pause[2]
+
+\begin{itemize}
+\item Para consultas longas, use ponderação similar para os termos de busca
+\end{itemize}
+
+\begin{equation}
+\nonumber
+RSV_d = \sum_{t\in q} \left[\log\frac{N}{\docf_t}\right]
+\cdot
+\frac{(k_1+1)\termf_{td}}{k_1((1-b) + b \times (L_d/\dlenave))+\termf_{td}}
+\cdot
+\frac{(k_3 + 1)\termf_{tq}}{k_3 + \termf_{tq}} \label{bm25-3}
+\end{equation}
+\begin{itemize}
+\item $\termf_{tq}$: frequência do termo na consulta $q$
+\item $k_3$: parâmetro de ajuste controlando a importância frequência do termo na consulta
+
+\item Não há normalização de comprimento para consultas (pois a recuperação é feita com respeito a uma única consulta fixa)
+
+\item Os parâmetros de ajuste acima devem ser escolhidos de maneira a otimizar a performance  em uma coleção de teste. Na ausência de tal otimização, experimentos mostram que valores  razoáveis para $k_1$ e $k_3$ encontram-se entre  1.2 e 2 e $b = 0.75$
+\end{itemize}
+
+\end{frame}
+%\begin{frame}
+%\frametitle{Bayesian Network Approaches to IR}
+%Turtle \& Croft (1989,1991) introduced into information retrieval the use of \myblue{Bayesian networks}, a form of probabilistic graphical model. Conceptually, Bayesian networks use directed graphs to show probabilistic dependencies between variables, and have led to the development of sophisticated algorithms for propagating influence so as to allow learning and inference with arbitrary knowledge within arbitrary directed acyclic graphs.
+%Turtle and Croft used a sophisticated network to better model the complex dependencies between a document and a user's information need.
+
+
+%The model decomposes into two parts: a document collection network and a query network. The document collection network is large, but can be precomputed: it maps from documents to terms to concepts. The concepts are a thesaurus-based expansion of the terms appearing in the document. The query network is relatively small but a new network needs to be built each time a query comes in, and then attached to the document network. The query network maps from query terms, to query subexpressions (built using probabilistic or ``noisy'' versions of \oper{AND} and \oper{OR} operators), to the user's information need.
+
+%The result is a flexible probabilistic network which can generalize
+%various simpler Boolean and probabilistic models. Indeed, this is  the
+%primary case of a statistical ranked retrieval model that naturally supports
+%structured query operators.  The system allowed
+%efficient large-scale retrieval, and was the basis of the InQuery text
+%retrieval system, built at the University of Massachusetts.  This
+%system performed very well in TREC evaluations and for a time was sold commercially. On the other hand, the model still used various approximations and independence assumptions to make parameter estimation and computation possible. There has not been much follow-on work along these lines, but we would note that this model was actually built very early on in the modern era of using Bayesian networks, and there have been many subsequent developments in the theory, and the time is perhaps right for a new generation of Bayesian network-based information retrieval systems.
+
+%\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Qual Modelo de Rankeamento Devo Usar?}
+\pause[2]
+
+\begin{itemize}
+\item Quero algo básico e simples $\rightarrow$ use o modelo vetorial com ponderação tf-idf.
+\item Quero usar um modelo de rankeamento ``estado-da-arte'' com ótima performance $\rightarrow$ use modelos de linguagem com BM25 e \myblue{parâmetros ajustados}
+\item Algo intermediário: BM25 ou modelos de linguagem sem ajuste ou com apenas um parâmetro ajustado
+
+\end{itemize}
+
+
+\end{frame}
+
+
+\againframe<2>{takeaway}
+
+\begin{frame}
+\frametitle{Material extra}
+\begin{itemize}
+\item Capítulo 11 do IIR
+\item Resources at
+\url{http://ifnlp.org/ir}
+%\begin{itemize}
+%\item Weka: A data mining software package that includes an
+%implementation of Naive Bayes
+%\item Reuters-21578 -- the most famous text classification
+%evaluation set (but now it's too small for realistic experiments)
+%\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\end{document}
