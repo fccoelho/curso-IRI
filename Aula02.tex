@@ -5,6 +5,7 @@
 \usepackage[portuguese]{babel}
 \usepackage{url}
 \usepackage{tikz}
+\usepackage{color}
 \usetikzlibrary{arrows}
 \usetikzlibrary{arrows}
 \usepackage{default}
@@ -214,6 +215,43 @@ estimador de relevância) no topo.
 \item Cada uma destas perguntas implica um problema de 
 classificação.
 \item Alternativa: usar heurísticas.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Complicações de formato e Língua}
+\begin{itemize}[<+->]
+\item Um mesmo índice normalmente contém termos de diversas línguas.
+\begin{itemize}[<+->]
+\item Algumas vezes um documento ou seus componentes contém múltiplas 
+línguas e formatos.
+\item Email em francês com PDF em espanhol anexado
+\end{itemize}
+\item Qual a unidade do documento para fins de indexação?
+\item Um arquivo?
+\item Um email?
+\item Um email com 5 anexos?
+\item Um grupo de arquivos(ppt ou latex in HTML)?
+\item Em suma: Responder à pergunta ``O que é um documento?''
+  não é trivial e requer algumas decisões.
+\end{itemize}
+\end{frame}
+
+\section{Termos}
+
+\subsection{Genericos + outras línguas}
+
+\begin{frame}
+\frametitle{Definições}
+\begin{itemize}[<+->]
+\item {\color{blue}Palavra} -- Uma string delimitada de caracteres como aparece 
+no texto.
+\item {\color{blue}Termo} -- Uma palavra ``normalizada'' (capitalização, 
+morfologia, ortografia, etc); Uma classe equivalente de palavras.
+\item {\color{blue}Token} -- Uma instancia de uma palavra ou termo ocorrendo em 
+um documento.
+\item {\color{blue}Tipo} -- O mesmo que termo na maioria dos casos: Uma classe 
+de equivalência de tokens.
 \end{itemize}
 \end{frame}
 
