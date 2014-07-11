@@ -12,6 +12,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{newalg}
 
 % Algumas definições %%%
 \def\term#1{{\sc #1}}   % IR terms in examples not index terms!
@@ -254,5 +255,569 @@ um documento.
 de equivalência de tokens.
 \end{itemize}
 \end{frame}
+
+\begin{frame}
+\frametitle{Normalização}
+\begin{itemize}[<+->]
+\item Precisamos ``normalizar'' os termos no texto indexado, assim como o 
+termos da consulta da mesma maneira.
+\item Exemplo: Queremos associar \emph{U.S.A.} com \emph{USA}
+\item A maneira mais comum é criar \myblue{classes de equivalência}
+  de termos.
+\item Alternativamente: fazer expansões assimétricas
+\begin{itemize}[<+->]
+\item window $\rightarrow$ window, windows
+\item windows $\rightarrow$ Windows, windows
+\item Windows (sem expansão)
+\end{itemize}
+\item Mais poderoso, porém menos eficiente
+\item \mygreen{Porque não colocamos 
+\emph{window},
+\emph{Window},
+\emph{windows}, e
+\emph{Windows} na mesma classe de equivalência?}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Normalização: outras línguas}
+\begin{itemize}[<+->]
+\item Normalização e detecção de linguagem interagem.
+\item \emph{PETER WILL NICHT MIT.} $\rightarrow$ MIT
+  $=$ mit
+\item \emph{He got his PhD from MIT.} $\rightarrow$ MIT
+  $\neq$ mit
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Lembre-se: Construção de índices invertidos}
+\begin{itemize}[<+->]
+\item Entrada:\\[0.2ex]
+\framebox{\weestrut Friends, Romans, countrymen.}
+\framebox{\weestrut So let it be with Caesar} \ldots
+\item Saída:\\[0.2ex]
+\framebox{\weestrut friend} \framebox{\weestrut roman}
+  \framebox{\weestrut countryman} \framebox{\weestrut so} \ldots
+\item Cada token é candidato a uma entrada de posting.
+\item Quais são os tokens válidos?
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercícios}
+
+\emph{In June, the dog likes to chase the cat in the barn.} --
+{\color{green}Quantos tokens? Quantos tipos de Palavras?}
+
+\bigskip
+
+Porque a tokenização é difícil -- mesmo em inglês. {\color{green}Tokenize:}
+ \emph{Mr.\ O'Neill
+thinks that the boys' stories about Chile's capital aren't amusing.}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problemas de tokenização: Uma ou duas palavras? (ou várias)}
+\begin{itemize}[<+->]
+\item Hewlett-Packard
+\item State-of-the-art
+\item co-education
+\item the hold-him-back-and-drag-him-away maneuver
+\item data base
+\item San Francisco
+\item Los Angeles-based company
+\item cheap San Francisco-Los Angeles fares
+\item York University vs.\ New York University
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Números}
+\begin{itemize}[<+->]
+\item 3/20/91
+\item 20/3/91
+\item Mar 20, 1991
+\item B-52
+\item 100.2.86.144
+\item (800) 234-2333
+\item 800.234.2333
+\item Sistemas mais antigos de RI costumavam não indexar números\ldots
+\item \ldots  mas as vezes isto pode ser útil.
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Chinês: Ná há espaços}
+
+\includegraphics{Chinese-example.eps}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Segmentação ambígua em chinês}
+
+\includegraphics[width=9cm]{ChineseAmbiguous.eps}
+
+Os dois caracteres podem ser tratados como uma palavra significando `monge' 
+ou como uma sequência de duas palavras significando ``e'' e ``parado''.
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Outros casos de ausência de espaços}
+\begin{itemize}[<+->]
+\item Palavras compostas em Holandês, Alemão, Sueco in Dutch, German, Swedish
+\item Computerlinguistik $\rightarrow$ Computer + Linguistik
+\item Lebensversicherungsgesellschaftsangestellter
+\item $\rightarrow$ leben + versicherung + gesellschaft + angestellter
+\item Inuit: tusaatsiarunnanngittualuujunga (Não consigo escutar direito.)
+\item Muitas outras línguas apresentam dificuldades de segmentação: 
+Finlandês, Urdu, \ldots
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Japonês}
+
+\includegraphics[width=11cm]{Japanese-example-bitmap.eps}
+
+
+\visible<2->{4 ``alfabetos'' diferentes: Caracteres chineses, 
+hiragana silabário para finalizações infleccionais e palavras 
+funcionais, 
+katakana silabário para transcrições de palavras estrangeiras. Sem espaços 
+(como no chinês).
+}
+
+\visible<3->{
+Um usuário pode fazer uma consulta inteiramente em hiragana!
+}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Árabe}
+\includegraphics[width=9cm]{Arabic-example.eps}
+\end{frame}
+
+\begin{frame}
+\frametitle{Árabe: Bidirecionalidade}
+\includegraphics[width=9cm]{Arabic-bidirectional.eps}
+
+\visible<2->{
+Bidirecionalidade não é um problema se o texto estiver codificado em 
+Unicode.
+}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Acentos e diacríticos}
+\begin{itemize}[<+->]
+\item Acentos: Árvore vs.\ Arvore (Simples omissão de acento)
+\item Tremas: Universit\"{a}t vs.\ Universitaet
+  (substituição por sequencia especial de caracteres: ``ae'')
+\item Critério mais importante: Qual a forma mais comumente adotada por 
+usuários em suas consultas?
+\item Mesmo em línguas que possuem acentos por padrão, freuentemente os 
+usuários não os digitam. 
+\end{itemize}
+\end{frame}
+
+\subsection{English}
+
+\begin{frame}
+\frametitle{Capitalização}
+\begin{itemize}[<+->]
+\item Reduzir todas as letras para minúsculas
+\item Possíveis exceções: Palavras capitalizadas no meio da frase
+\item MIT vs.\ mit
+\item Fed vs.\ fed
+\item Frequentemente é melhor converter tudo para minúsculas pois os 
+usuários normalmente fazem suas consultas sem utilizar a capitalização 
+correta.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{``Stop words''}
+\begin{itemize}[<+->]
+\item ``stop words'' = Palavras extremamente comuns que podem parecer ser 
+ de pouco valor na seleção de documentos correspondentes à necessidade do 
+usuário.
+\item Exemplos: artigos, preposições, etc.
+
+\item Eliminação de ``Stop word'' costumava ser padrão em sistemas de RI mais 
+antigos.
+\item Mas estas palavras são necessárias para consultas frasais,
+  p.ex. ``Reino da Dinamarca''
+\item A maioria dos engines de busca na web, indexa ``stop words''.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mais classes de equivalência}
+\begin{itemize}[<+->]
+\item Soundex: equivalencia fonética, Muller = Mueller)
+\item Thesauri: equivalencia semântica, carro = automóvel)
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Lematização}
+\begin{itemize}[<+->]
+\item Reduz variações e inflexões a uma forma básica
+\item Exemplo: \emph{sou, são, é $\rightarrow$ ser}
+\item Exemplo: \emph{carro, carros $\rightarrow$ carros}
+\item Exemple: \emph{Os carros do rapaz são de diferentes cores}
+  $\rightarrow$ \emph{o carro do rapaz ser de diferente cor}
+\item Lematização implica fazer a redução ``correta'' às forma mais fundamental 
+segundo o dicionário {o \color{blue}lemma}).
+\item Morfologia inflexional (\emph{cortando} 
+$\rightarrow$
+  \emph{cortar}) vs.\ morfologia derivacional (\emph{destruição} 
+$\rightarrow$ \emph{destruir})
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Truncagem (``Stemming'')}
+\begin{itemize}[<+->]
+\item Definição de truncagem: Heurística bruta que {\color{blue}corta fora as 
+terminações das palavras} na esperança de alcançar o mesmo objetivo da 
+lematização sem a necessidade de conhecimento linguístico.
+\item Depende da língua
+\item Frequentemente inflexional {\color{blue}e} derivacional
+\item Exemplo de truncagem derivacional: \emph{automatizar, automático,
+  automatização} se reduzem a \emph{automat}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Algoritmo de Porter}
+\begin{itemize}[<+->]
+\item Algoritmo mais comum para truncagem do inglês 
+\item Resultados sugerem que é tão bom quanto outras opções de 
+truncagem
+\item Convenções + 5 fases de reduções 
+\item Fases são aplicadas sequencialmente
+\item Cada fase consiste de um conjunto de comandos.
+\begin{itemize}[<+->]
+\item Exemplo de comando: Deleta o \emph{ement} final se o que sobrar for mais 
+longo do que um caractere
+\item replacement $\rightarrow$ replac
+\item cement $\rightarrow$ cement
+\end{itemize}
+\item Exemplo de convenção: Das regras em comando composto, selecione aquela 
+que se aplica ao sufixo mais longo.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Trucador Porter: Algumas regras}
+
+\begin{tabular}[t]{lll@{\hspace{1in}}lll}
+\multicolumn{3}{l}{\textbf{Regra}} & \multicolumn{3}{@{}l}{\textbf{Exemplo}} \\
+SSES & $\rightarrow$ & SS  &   caresses  & $\rightarrow$ &  caress \\
+IES  & $\rightarrow$ & I   &   ponies    & $\rightarrow$ &  poni \\
+SS   & $\rightarrow$ & SS  &   caress    & $\rightarrow$ &  caress \\
+S    & $\rightarrow$ &     &   cats      & $\rightarrow$ &  cat \\
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}[shrink=10]
+\frametitle{Três Truncadores: Uma comparação}
+
+\begin{description}
+
+\item[\emph{Texto exemplo:}]
+Such an analysis can reveal features that are not easily visible from
+the variations in the individual genes and can lead to a picture of
+expression that is more biologically transparent and accessible to
+interpretation
+
+\item[\emph{Truncador Porter:}]
+such an analysi can reveal featur that ar not easili visibl from the
+variat in the individu gene and can lead to a pictur of express that is
+more biolog transpar and access to interpret
+
+\item[\emph{Truncador Lovins:}]
+such an analys can reve featur that ar not eas vis from
+th vari in th individu gen and can lead to a pictur of
+expres that is mor biolog transpar and acces to
+interpres
+
+\item[\emph{Truncador Paice:}]
+such an analys can rev feat that are not easy vis from 
+the vary in the individ gen and can lead to a pict of 
+express that is mor biolog transp and access to 
+interpret 
+
+\end{description}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Truncagem melhora efetividade?}
+\begin{itemize}[<+->]
+\item Em geral,  a truncagem aumenta a efetividade para algumas 
+consultas  e diminui para outras.
+\item Consultas em que a truncagem pode ajudar: [tartan
+  sweaters], [sightseeing tour san francisco]
+\item (classes de equivalência: \{sweater,sweaters\}, \{tour,tours\})
+\item Classes de equivalência para \emph{oper} do truncador Porter 
+ contém todas estas formas: \emph{
+operate operating operates operation operative operatives operational}.
+\item Consultas em que a truncagem prejudica: [operational AND research], 
+[operating
+  AND system], [operative AND dentistry]
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Exercise: O que o Google faz?}
+\mygreen{\begin{itemize}
+\item ``Stop words''
+\item Normalização
+\item Tokenização
+\item minusculização
+\item Truncagem
+\item Alfabetos não latinos
+\item Tremas
+\item Palavras compostas
+\item Números
+\end{itemize}
+}
+\end{frame}
+\section{Consultas de frases}
+
+\begin{frame}
+\frametitle{Consultas de frases}
+\begin{itemize}[<+->]
+\item Queremos responder a uma consulta como [stanford
+  university] -- como uma frase.
+\item Logo \emph{The inventor Stanford
+  Ovshinsky never went to university} \myblue{não} deve ser uma resposta.
+\item O conceito de consulta de frase é facilmente compreensível para 
+usuários.
+\item Cerca de 10\% das consultas na web são consultas de frases.
+\item COnseguências para o índice invertido: Não é mais suficiente guardar 
+docIDs  em listas de postings.
+\item Duas maneiras de estender os índice invertido:
+\begin{itemize}
+\item índice de bigramas
+\item Índice posicional
+%\item \mygreen{Any ideas?}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Índices de bigramas}
+\begin{itemize}[<+->]
+\item Indexa cada par consecutivo de termos no texto como uma frase.
+\item Por exemplo, \emph{Friends, Romans, Countrymen} vai gerar dois 
+bigramas: \emph{``friends romans''} e 
+  \emph{``romans countrymen''}
+\item Cada um destes bigramas é agora um termo do vocabulário.
+\item Agora consultas de frases de duas palavras podem ser facilmente 
+respondidas. 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Consultas de frases mais longas}
+\begin{itemize}[<+->]
+\item Uma frase longa como \emph{``stanford university palo
+  alto''} pode ser representada como a consulta Booleana 
+\term{``stanford university''}
+\oper{AND}
+\term{``university palo''}
+\oper{AND}
+\term{``palo alto''}
+\item É necessário pós-filtrar o conjunto de respostas para identificar o 
+subconjunto que contém a frase de quatro palavras.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problemas com índices de bigramas}
+\begin{itemize}[<+->]
+\item \mygreen{Porque estes índices são raramente usados?}
+\item Falsos Positivos, como indicado acima
+\item Índice explode devido ao tamanho exagerado do vocabulário
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Índices posicionais}
+\pause[2]
+\begin{itemize}
+\item Índices posicionais são mais eficientes que indices de bigramas.
+\item Listas de Postings em um índice {\color{blue}não posicional}: Cada 
+posting é apenas um docID
+\item Listas de Postings em um índice {\color{blue} posicional}: Cada 
+posting é um docID e {\color{blue} uma lista de posições}
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Índices positionais: Exemplo}
+
+\pause[2]
+
+Query: \emph{``to$_1$ be$_2$ or$_3$ not$_4$ to$_5$ be$_6$''}
+
+\pause[3]
+
+\raggedright
+\term{to}, 993427:\\
+\hspace*{2em}\llap{$\langle$} \alert<2-6>{1}: $\langle$\alert<2,3>{7}, 
+\alert<4,5>{18}, \alert<6>{33, 72, 86, 231}$\rangle$;\\
+\hspace*{2em} \alert<7>{2}: $\langle$1, 17, 74, 222, 255$\rangle$; \\
+\hspace*{2em} \alert<8->{4}: $\langle$\alert<9>{8}, \alert<10-12>{16}, 
+\alert<12,13,14,15>{190}, \alert<15->{429}, \alert<17->{433}$\rangle$;\\
+\hspace*{2em} 5: $\langle$363, 367$\rangle$; \\
+\hspace*{2em} 7: $\langle$13, 23, 191$\rangle$; 
+\ldots $\rangle$ \\[2ex]
+\term{be}, 178239:\\
+\hspace*{2em}\llap{$\langle$}  \alert<2-6>{1}: $\langle$\alert<3>{17}, 
+\alert<5>{25}$\rangle$;\\
+\hspace*{2em} \alert<8->{4}: $\langle$\alert<11-12>{17}, \alert<14,15>{191}, 
+291, \alert<16->{430}, \alert<18->{434}$\rangle$;\\
+\hspace*{2em} 5: $\langle$14, 19, 101$\rangle$; 
+\ldots $\rangle$
+
+
+
+\smallskip
+
+\visible<19->{Documento 4 é a resposta!}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Busca por proximidade }
+\begin{itemize}[<+->]
+\item Acabamos de ver como usar um índice posicional para busca de 
+frases.
+\item Também podemos usá-los para busca por proximidade.
+\item Por exemplo: \query{employment /4 place}
+\item Encontrar todos os documentos que contêm \term{employment} e 
+  \term{place} a até 4 palavras words de distância entre si.
+\item \emph{Employment agencies that place healthcare
+  workers are seeing growth} é uma resposta.
+\item \emph{Employment agencies that have learned to adapt
+  now place healthcare
+  workers} não é uma resposta.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Busca por proximidade}
+\begin{itemize}[<+->]
+\item Use o índice posicional
+\item Algoritmo mais simples: Olhe para o Produto vetorial das 
+posições de (i) \term{employment} no documento e (ii)
+  \term{place} no documento
+\item Muito ineficiente para palavras frequentes, especialmente ``stop 
+words''
+\item Note que queremos retornar as posições encontradas e não apenas 
+uma lista de documentos.
+\item Isto é importante para sumarizações dinâmicas etc.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[shrink=20]
+\frametitle{Interseção de ``proximidade'' }
+
+
+\begin{algorithm}{PositionalIntersect}{p_1, p_2, k}
+answer \= \langle\;\rangle \\
+\begin{WHILE} {p_1 \neq \NIL \text{and} p_2 \neq \NIL}
+  \begin{IF}{docID(p_1) = docID(p_2)}
+    l \= \langle\;\rangle\\
+    pp_1 \= positions(p_1) \\
+    pp_2 \= positions(p_2) \\
+    \begin{WHILE} {pp_1 \neq \NIL}
+      \begin{WHILE} {pp_2 \neq \NIL}
+        \begin{IF} {|pos(pp_1)-pos(pp_2)| \le k}
+          \CALL{Add}(l,pos(pp_2))
+        \ELSE \begin{IF} {pos(pp_2) 
+%%<
+> pos(pp_1)}
+                 \algkey{break}
+              \end{IF}
+        \end{IF} \\
+        pp_2 \= next(pp_2)
+      \end{WHILE} \\
+      \begin{WHILE} {l \neq \langle\;\rangle \text{and}
+          |l[0]-pos(pp_1)|
+%%<
+>k}
+        \CALL{Delete}(l[0])
+      \end{WHILE} \\
+      \begin{FOR} {\EACH ps \in l}
+        \CALL{Add}(answer, \langle docID(p_1), pos(pp_1), ps\rangle) 
+      \end{FOR}\\
+      pp_1 \= next(pp_1)
+    \end{WHILE} \\
+    p_1 \= next(p_1) \\
+    p_2 \= next(p_2)
+  \ELSE
+    \begin{IF} {docID(p_1) < 
+%%>
+docID(p_2)}
+      p_1 \= next(p_1)
+    \ELSE 
+      p_2 \= next(p_2)
+    \end{IF}
+  \end{IF}
+\end{WHILE} \\
+\RETURN{answer}
+\end{algorithm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Esquema Combinado}
+\begin{itemize}[<+->]
+\item Índices de bigramas e posicionais podem ser combinados proveitosamente.
+\item Muitos bigramas são extremamente frequentes: Michael Jackson,
+  Britney Spears,  etc.
+\item Para estes bigramas, o aumento de velocidade proporcionado pela 
+indexação de bigramas, é substancial.
+\item Esquema de combinação: Incluir bigramas frequentescomo 
+vocabulário no índice. Todas as outras frases são recuperadas por interseção 
+posicional.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Consultas ``Posicionais'' no Google}
+\begin{itemize}[<+->]
+\item Para buscas na Web, consultas posicionais são muito mais caras do que 
+consultas Booleanas regulares.
+\item Vejamos o exemplo de consultas de frases.
+\item {\color{green} Porque são mais custosas?}
+\item {\color{green}Você consegue demonstrar no Google que as consultas de 
+frases são mais custosas que consultas Booleanas?}
+\end{itemize}
+\end{frame}
+
+
+\againframe<6>{takeaway}
 
 \end{document}
