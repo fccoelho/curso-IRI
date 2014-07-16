@@ -259,13 +259,108 @@ intervalo $[a,b]$ onde $a,b$ são inteiros positivos
 
 
 \begin{frame}
-\frametitle{Binary tree}
+\frametitle{Árvore Binária}
 \includegraphics[width=11cm]{bst.eps}
 \end{frame}
 
 \begin{frame}
-\frametitle{B-tree}
+\frametitle{Árvore B}
 \includegraphics[width=11cm]{btree.eps}
 \end{frame}
  
+ \section{Consultas Coringa}
+
+\begin{frame}
+\frametitle{Consultas coringa}
+\begin{itemize}[<+->]
+\item \query{mon*}: Encontre todos os documentos contendo termos começados 
+por \emph{mon}
+\item Fácil com dicionários baseados em árvore B: recupera todos os termos $t$ 
+no intervalo: $ \mbox{mon} \leq t < 
+%%>
+\mbox{moo}$
+\item \query{*mon}: Encontre todos os documentos contendo termos que terminam 
+com \emph{mon}
+\begin{itemize}[<+->]
+\item Mantém uma árvore adicional para termos  \emph{ao contrário}
+\item Então recupera todos os termos $t$ no intervalo: $
+  \mbox{nom} \leq t < 
+%%>
+\mbox{non}$
+\end{itemize}
+\item Resultado: Um conjunto de termos que correspondem à consulta 
+coringa
+\item Então recupera todos os documentos que contenham estes termos
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Como lidar com um * no meio de um termo}
+\begin{itemize}[<+->]
+\item Exemplo: \query{m*nchen}
+\item Poderíamos buscar todos os termos que satisfazem \query{m*} e
+\query{*nchen} Na árvore B e reter a interseção dos dois conjuntos.
+\item Mas sai caro
+\item Alternativa: índice {\color{blue} permuterm} 
+\item Idéia básica: Rotaciona cada consulta coringa, de forma que o * ocorra no 
+final.
+\item Armazena cada uma destas rotações no dicionário, por exemplo, em uma 
+árvore B
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Índice Permuterm }
+\begin{itemize}[<+->]
+\item Para o termo \term{hello}: adicione 
+\emph{hello\$},
+\emph{ello\$h},
+\emph{llo\$he},
+\emph{lo\$hel}, 
+\emph{o\$hell}, e
+\emph{\$hello}
+  à árvore B onde \$ é um símbolo especial
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Permuterm $\rightarrow$ mapeamento de termos}
+\includegraphics[width=5.5cm]{permuterm.eps}
+\end{frame}
+
+\begin{frame}
+\frametitle{Índice Permuterm }
+\begin{itemize}[<+->]
+\item Para \term{hello}, adicionamos:
+\emph{hello\$},
+\emph{ello\$h},
+\emph{llo\$he},
+\emph{lo\$hel}, e
+\emph{o\$hell}
+\item Consultas
+\begin{itemize}[<+->]
+\item Para X, acesse X\$
+\item Para X*, acesse \$X*
+\item Para *X, acesse X\$*
+\item Para *X*, acesse X*
+\item Para X*Y, acesse Y\$X*
+\item Example: Para hel*o, acesse o\$hel*
+%\item \mygreen{How do we handle X*Y*Z?}
+\end{itemize}
+\item Um nome mais adequado para um índice Permuterm  seria uma árvore 
+permuterm \myblue{tree}.
+\item Mas índice permuterm é o nome mais comum.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Processing a lookup in the permuterm index}
+\begin{itemize}[<+->]
+\item Rotate query wildcard to the right
+\item Use B-tree lookup as before
+\item Problem: Permuterm more than \myblue{quadruples} the size of the
+  dictionary compared to a regular B-tree. (empirical number)
+\end{itemize}
+\end{frame}
+
 \end{document}

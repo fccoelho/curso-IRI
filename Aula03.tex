@@ -329,36 +329,38 @@ final.
 \end{frame}
 
 \begin{frame}
-\frametitle{Permuterm index}
+\frametitle{Índice Permuterm }
 \begin{itemize}[<+->]
-\item For \term{hello}, we've stored:
+\item Para \term{hello}, adicionamos:
 \emph{hello\$},
 \emph{ello\$h},
 \emph{llo\$he},
-\emph{lo\$hel}, and
+\emph{lo\$hel}, e
 \emph{o\$hell}
-\item Queries
+\item Consultas
 \begin{itemize}[<+->]
-\item For X, look up X\$
-\item For X*, look up \$X*
-\item For *X, look up X\$*
-\item For *X*, look up X*
-\item For X*Y, look up Y\$X*
-\item Example: For hel*o, look up o\$hel*
+\item Para X, acesse X\$
+\item Para X*, acesse \$X*
+\item Para *X, acesse X\$*
+\item Para *X*, acesse X*
+\item Para X*Y, acesse Y\$X*
+\item Example: Para hel*o, acesse o\$hel*
 %\item \mygreen{How do we handle X*Y*Z?}
 \end{itemize}
-\item Permuterm index would better be called a permuterm \myblue{tree}.
-\item But permuterm index is the more common name.
+\item Um nome mais adequado para um índice Permuterm  seria uma árvore 
+permuterm \myblue{tree}.
+\item Mas índice permuterm é o nome mais comum.
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Processing a lookup in the permuterm index}
+\frametitle{Processando um acesso ao índice permuterm }
 \begin{itemize}[<+->]
-\item Rotate query wildcard to the right
-\item Use B-tree lookup as before
-\item Problem: Permuterm more than \myblue{quadruples} the size of the
-  dictionary compared to a regular B-tree. (empirical number)
+\item Rotacione a consulta coringa para a direita
+\item Use o acesso à árvore B como descrito anteriormente
+\item Problema: O Permuterm mais do que {\color{blue} quadruplica} 
+o tamanho do dicionário quando comparado a uma árvore B regular. 
+(observação empírica)
 \end{itemize}
 \end{frame}
 
