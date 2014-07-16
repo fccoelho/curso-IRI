@@ -275,22 +275,91 @@ intervalo $[a,b]$ onde $a,b$ são inteiros positivos
 \begin{itemize}[<+->]
 \item \query{mon*}: Encontre todos os documentos contendo termos começados 
 por \emph{mon}
-\item Easy with B-tree dictionary: retrieve
-  all terms $t$ in the range: $ \mbox{mon} \leq t < 
+\item Fácil com dicionários baseados em árvore B: recupera todos os termos $t$ 
+no intervalo: $ \mbox{mon} \leq t < 
 %%>
 \mbox{moo}$
-\item \query{*mon}: find all docs containing any term ending
-  with \emph{mon}
+\item \query{*mon}: Encontre todos os documentos contendo termos que terminam 
+com \emph{mon}
 \begin{itemize}[<+->]
-\item Maintain an additional tree for terms \emph{backwards}
-\item Then retrieve  all terms $t$ in the range: $
+\item Mantém uma árvore adicional para termos  \emph{ao contrário}
+\item Então recupera todos os termos $t$ no intervalo: $
   \mbox{nom} \leq t < 
 %%>
 \mbox{non}$
 \end{itemize}
-\item Result: A set of terms that are matches for wildcard
-  query
-\item Then retrieve documents that contain any of these terms
+\item Resultado: Um conjunto de termos que correspondem à consulta 
+coringa
+\item Então recupera todos os documentos que contenham estes termos
 \end{itemize}
 \end{frame}
+
+\begin{frame}
+\frametitle{Como lidar com um * no meio de um termo}
+\begin{itemize}[<+->]
+\item Exemplo: \query{m*nchen}
+\item Poderíamos buscar todos os termos que satisfazem \query{m*} e
+\query{*nchen} Na árvore B e reter a interseção dos dois conjuntos.
+\item Mas sai caro
+\item Alternativa: índice {\color{blue} permuterm} 
+\item Idéia básica: Rotaciona cada consulta coringa, de forma que o * ocorra no 
+final.
+\item Armazena cada uma destas rotações no dicionário, por exemplo, em uma 
+árvore B
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Índice Permuterm }
+\begin{itemize}[<+->]
+\item Para o termo \term{hello}: adicione 
+\emph{hello\$},
+\emph{ello\$h},
+\emph{llo\$he},
+\emph{lo\$hel}, 
+\emph{o\$hell}, e
+\emph{\$hello}
+  à árvore B onde \$ é um símbolo especial
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Permuterm $\rightarrow$ mapeamento de termos}
+\includegraphics[width=5.5cm]{permuterm.eps}
+\end{frame}
+
+\begin{frame}
+\frametitle{Permuterm index}
+\begin{itemize}[<+->]
+\item For \term{hello}, we've stored:
+\emph{hello\$},
+\emph{ello\$h},
+\emph{llo\$he},
+\emph{lo\$hel}, and
+\emph{o\$hell}
+\item Queries
+\begin{itemize}[<+->]
+\item For X, look up X\$
+\item For X*, look up \$X*
+\item For *X, look up X\$*
+\item For *X*, look up X*
+\item For X*Y, look up Y\$X*
+\item Example: For hel*o, look up o\$hel*
+%\item \mygreen{How do we handle X*Y*Z?}
+\end{itemize}
+\item Permuterm index would better be called a permuterm \myblue{tree}.
+\item But permuterm index is the more common name.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Processing a lookup in the permuterm index}
+\begin{itemize}[<+->]
+\item Rotate query wildcard to the right
+\item Use B-tree lookup as before
+\item Problem: Permuterm more than \myblue{quadruples} the size of the
+  dictionary compared to a regular B-tree. (empirical number)
+\end{itemize}
+\end{frame}
+
 \end{document}
