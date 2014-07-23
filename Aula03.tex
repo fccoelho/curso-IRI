@@ -364,4 +364,361 @@ o tamanho do dicionário quando comparado a uma árvore B regular.
 \end{itemize}
 \end{frame}
 
+\section{Distância de Edição}
+
+\begin{frame}[<+->]
+\frametitle{Correção ortográfica}
+\pause[2]
+\begin{itemize}
+\item Dois usos principais
+\begin{itemize}
+\item Correção de documentos a serem indexados
+\item Correção de consultas
+\end{itemize}
+\item Dois métodos diferentes para correção ortográfica
+\item Correção de {\color{blue} Palavra isolada} 
+\begin{itemize}
+\item Verifica cada palavra isoladamente quanto à correção 
+ortográfica
+\item Não ``pega'' erros que resultam em palavras corretas, p.ex., \emph{an 
+asteroid that fell {\color{blue} form} the sky}
+\end{itemize}
+\item Correção ortográfica {\color{blue} contextual} 
+\begin{itemize}
+\item Olha para as palavras vizinhas
+\item Pode corrigir o erro \emph{form}/\emph{from} acima
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Corrigindo documentos}
+\pause[2]
+\begin{itemize}
+\item Não estamos interessados em correção interativa de documentos
+(p.ex., MS Word) neste curso.
+\item Em RI, Usamos a correção de documentos primariamente para documentos 
+OCR-izados. (OCR = optical character recognition)
+\item A filosofia geral em RI é: Não altere os documentos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Corrigindo consultas}
+\pause[2]
+\begin{itemize}
+\item Primeiro: correção ortográfica de palavras isoladas
+\item Premissa 1: Há uma lista de palavas ``corretas'' a partir da qual as 
+correções podem ser obtidas.
+\item Premissa 2: Há uma maneira de calcular a {\color{blue} distância} entre 
+uma palavra errada e uma correta.
+\item Algoritmo simplificado: retorne a palavra ``correta'' com a menor 
+distância da palavra errada.
+\item Exemplo: \emph{informaton} $\rightarrow$ \emph{information}
+\item Como lista de palavras corretas, podemos usar o vocabulário de todas as 
+palavras que ocorrem em nossa coleção.
+\item {\color{green} Porque isto é problemático?} 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Alternativas  ao uso do vocabulário de termos}
+\pause[2]
+\begin{itemize}
+\item Um dicionário padrão (Webster's, Aurélio etc.)
+\item Um dicionário de um domínio específico (Para sistemas de RI 
+especializados)
+\item O vocabulário de termos ponderado, ponderado de forma 
+adequada
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Distância entre a palavra errada e a ``correta''}
+\pause[2]
+\begin{itemize}
+\item Estudaremos várias alternativas.
+\item Distância de edição e a distância de Levenshtein 
+\item Distância de edição ponderada
+\item sobreposição de $k$-grams
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Distância de edição}
+\pause[2]
+\begin{itemize}
+\item A distância de edição entre a string $s_1$ e a string $s_2$ é o número 
+mínimo de operações básicas que converte $s_1$ em
+$s_2$.
+\item Distância de Levenshtein: Operações válidas: inserção, deleção, e
+substituição
+\item Distância de Levenshtein \emph{dog}-\emph{do}: 1
+\item Distância de Levenshtein \emph{cat}-\emph{cart}: 1
+\item Distância de Levenshtein \emph{cat}-\emph{cut}: 1
+\item Distância de Levenshtein \emph{cat}-\emph{act}: 2
+\item Distância de Damerau-Levenshtein \emph{cat}-\emph{act}: 1
+\item Distância de Damerau-Levenshtein inclui a transposição como uma quarta 
+operação possivel.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Distância de Levenshtein: Computação}
+
+\bigskip
+
+\begin{tabular}{ ||c ||c ||c ||c ||c ||c ||}\hline\hline
+& & f & a & s & t \\\hline\hline
+& 
+
+ 0& 1&2&3&4\\\hline\hline
+c & 1&1&2&3&4\\\hline\hline
+a & 2&2&1&2&3\\\hline\hline
+t & 3&3&2&2&2\\\hline\hline
+s & 4&4&3&2&3\\\hline\hline
+\end{tabular}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Distância de Levenshtein: Algoritmo}
+
+\begin{algorithm}{LevenshteinDistance}{s_1,s_2}
+\begin{FOR}
+{i \= 0 \TO |s_1|}
+m[i,0] = i
+\end{FOR}\\
+\begin{FOR}
+{j \= 0 \TO |s_2|}
+m[0,j] = j
+\end{FOR}\\
+\begin{FOR}
+{i \= 1 \TO |s_1|}
+\begin{FOR}
+{j \= 1 \TO |s_2|}
+\begin{IF}{s_1[i]=s_2[j]}
+m[i,j] = \min\{m[i\mbox{-}1, j] \mbox{+} 1,m[i, j\mbox{-}1] \mbox{+} 
+1,m[i\mbox{-}1,j\mbox{-}1] \}
+\ELSE
+m[i,j] = \min\{m[i\mbox{-}1, j] \mbox{+} 1,m[i, j\mbox{-}1] \mbox{+} 
+1,m[i\mbox{-}1,j\mbox{-}1]\mbox{+}1 \}
+\end{IF}
+\end{FOR}
+\end{FOR}\\
+\RETURN{m[|s_1|,|s_2|]}
+\end{algorithm}
+
+Operações: inserção (custo 1), deleção (custo 1), substituição (custo
+1), cópia (custo 0)
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Distância de Levenshtein: Algoritmo}
+
+\begin{algorithm}{LevenshteinDistance}{s_1,s_2}
+\begin{FOR}
+{i \= 0 \TO |s_1|}
+m[i,0] = i
+\end{FOR}\\
+\begin{FOR}
+{j \= 0 \TO |s_2|}
+m[0,j] = j
+\end{FOR}\\
+\begin{FOR}
+{i \= 1 \TO |s_1|}
+\begin{FOR}
+{j \= 1 \TO |s_2|}
+\begin{IF}{s_1[i]=s_2[j]}
+m[i,j] = \min\{m[i\mbox{-}1, j] \mbox{+} 1, \myred{m[i, j\mbox{-}1] \mbox{+} 
+1},m[i\mbox{-}1,j\mbox{-}1] \}
+\ELSE
+m[i,j] = \min\{m[i\mbox{-}1, j] \mbox{+} 1, \myred{m[i, j\mbox{-}1] \mbox{+} 
+1},m[i\mbox{-}1,j\mbox{-}1]\mbox{+}1 \}
+\end{IF}
+\end{FOR}
+\end{FOR}\\
+\RETURN{m[|s_1|,|s_2|]}
+\end{algorithm}
+
+Operações: {\color{red} inserção (custo 1)}, deleção (custo 1), substituição 
+(custo
+1), cópia (custo 0)
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Distância de Levenshtein: Algoritmo}
+
+\begin{algorithm}{LevenshteinDistance}{s_1,s_2}
+\begin{FOR}
+{i \= 0 \TO |s_1|}
+m[i,0] = i
+\end{FOR}\\
+\begin{FOR}
+{j \= 0 \TO |s_2|}
+m[0,j] = j
+\end{FOR}\\
+\begin{FOR}
+{i \= 1 \TO |s_1|}
+\begin{FOR}
+{j \= 1 \TO |s_2|}
+\begin{IF}{s_1[i]=s_2[j]}
+m[i,j] = \min\{ \myred{m[i\mbox{-}1, j] \mbox{+} 1},m[i, j\mbox{-}1] \mbox{+} 
+1,m[i\mbox{-}1,j\mbox{-}1] \}
+\ELSE
+m[i,j] = \min\{ \myred{m[i\mbox{-}1, j] \mbox{+} 1},m[i, j\mbox{-}1] \mbox{+} 
+1,m[i\mbox{-}1,j\mbox{-}1]\mbox{+}1 \}
+\end{IF}
+\end{FOR}
+\end{FOR}\\
+\RETURN{m[|s_1|,|s_2|]}
+\end{algorithm}
+
+
+Operações: inserção (custo 1), {\color{red} deleção (custo 1)}, substituição 
+(custo
+1), cópia (custo 0)
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Distância de Levenshtein: Algorithm}
+
+\begin{algorithm}{LevenshteinDistance}{s_1,s_2}
+\begin{FOR}
+{i \= 0 \TO |s_1|}
+m[i,0] = i
+\end{FOR}\\
+\begin{FOR}
+{j \= 0 \TO |s_2|}
+m[0,j] = j
+\end{FOR}\\
+\begin{FOR}
+{i \= 1 \TO |s_1|}
+\begin{FOR}
+{j \= 1 \TO |s_2|}
+\begin{IF}{s_1[i]=s_2[j]}
+m[i,j] = \min\{m[i\mbox{-}1, j] \mbox{+} 1,m[i, j\mbox{-}1] \mbox{+} 
+1,m[i\mbox{-}1,j\mbox{-}1] \}
+\ELSE
+m[i,j] = \min\{m[i\mbox{-}1, j] \mbox{+} 1,m[i, j\mbox{-}1] \mbox{+} 1, 
+\myred{m[i\mbox{-}1,j\mbox{-}1]\mbox{+}1} \}
+\end{IF}
+\end{FOR}
+\end{FOR}\\
+\RETURN{m[|s_1|,|s_2|]}
+\end{algorithm}
+
+Operações: inserção (custo 1), deleção (custo 1), {\color{red} substituição 
+(custo
+1)}, cópia (custo 0)
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Distância de Levenshtein: Algoritmo}
+
+\begin{algorithm}{LevenshteinDistance}{s_1,s_2}
+\begin{FOR}
+{i \= 0 \TO |s_1|}
+m[i,0] = i
+\end{FOR}\\
+\begin{FOR}
+{j \= 0 \TO |s_2|}
+m[0,j] = j
+\end{FOR}\\
+\begin{FOR}
+{i \= 1 \TO |s_1|}
+\begin{FOR}
+{j \= 1 \TO |s_2|}
+\begin{IF}{s_1[i]=s_2[j]}
+m[i,j] = \min\{m[i\mbox{-}1, j] \mbox{+} 1,m[i, j\mbox{-}1] \mbox{+} 1, 
+\myred{m[i\mbox{-}1,j\mbox{-}1]} \}
+\ELSE
+m[i,j] = \min\{m[i\mbox{-}1, j] \mbox{+} 1,m[i, j\mbox{-}1] \mbox{+} 
+1,m[i\mbox{-}1,j\mbox{-}1]\mbox{+}1 \}
+\end{IF}
+\end{FOR}
+\end{FOR}\\
+\RETURN{m[|s_1|,|s_2|]}
+\end{algorithm}
+
+Operações: inserção (custo 1), deleção (custo 1), substituição (custo
+1), {\color{red} cópia (custo 0)}
+
+
+\end{frame}
+
+\begin{frame}[label=lmatrix]
+\frametitle{Distância de Levenshtein: Exemplo}
+
+\bigskip
+
+\begin{tabular}{ ||c ||c ||c ||c ||c ||c ||}\hline\hline
+& & f & a & s & t \\\hline\hline
+& \begin{tabular}{l|l}&\\\hline&{\bf 0}\end{tabular} &
+\begin{tabular}{l|l}&\\\hline{\bf 1 }&{\bf 1 }\end{tabular} &
+\begin{tabular}{l|l}&\\\hline{\bf 2 }&{\bf 2 }\end{tabular} &
+\begin{tabular}{l|l}&\\\hline{\bf 3 }&{\bf 3 }\end{tabular} &
+\begin{tabular}{l|l}&\\\hline{\bf 4 }&{\bf 4 }\end{tabular} \\\hline\hline
+c & \begin{tabular}{l|l}&{\bf 1 }\\\hline&{\bf 1 }\end{tabular}
+&
+\begin{tabular}{l|l} \textsl{{1}} & \textsl{2} \\\hline \textsl{2} & 
+\textsl{{1}} \end{tabular} & \begin{tabular}{l|l} {\bf 2} & 3 \\\hline {\bf 2} & 
+{\bf 2} \end{tabular} & \begin{tabular}{l|l} {\bf 3} & 4 \\\hline {\bf 3} & {\bf 
+3} \end{tabular} & \begin{tabular}{l|l} {\bf 4} & 5 \\\hline {\bf 4} & {\bf 4} 
+\end{tabular} \\\hline\hline
+a & \begin{tabular}{l|l}&{\bf 2 }\\\hline&{\bf 2 }\end{tabular}
+& \begin{tabular}{l|l} {\bf 2} & {\bf 2} \\\hline 3 & {\bf 2} \end{tabular} &
+\begin{tabular}{l|l} \textsl{{1}} & \textsl{3} \\\hline \textsl{3} & 
+\textsl{{1}} \end{tabular}  &
+\begin{tabular}{l|l} \textsl{3} & \textsl{4} \\\hline \textsl{{2}} & 
+\textsl{{2}} \end{tabular} & \begin{tabular}{l|l} 4 & 5 \\\hline {\bf 3} & {\bf 
+3} \end{tabular} \\\hline\hline
+t & \begin{tabular}{l|l}&{\bf 3 }\\\hline&{\bf 3 }\end{tabular}
+& \begin{tabular}{l|l} {\bf 3} & {\bf 3} \\\hline 4 & {\bf 3} \end{tabular} & 
+\begin{tabular}{l|l} 3 & {\bf 2} \\\hline 4 & {\bf 2} \end{tabular} & 
+\begin{tabular}{l|l} {\textsl{2}} & \textsl{3} \\\hline \textsl{3} & 
+{\textsl{2}} \end{tabular} &
+\begin{tabular}{l|l} \textsl{{2}} & \textsl{4} \\\hline \textsl{3} & 
+\textsl{{2}} \end{tabular} \\\hline\hline
+s & \begin{tabular}{l|l}&{\bf 4 }\\\hline&{\bf 4 }\end{tabular}
+& \begin{tabular}{l|l} {\bf 4} & {\bf 4} \\\hline 5 & {\bf 4} \end{tabular} & 
+\begin{tabular}{l|l} 4 & {\bf 3} \\\hline 5 & {\bf 3} \end{tabular} & 
+\begin{tabular}{l|l} {\bf 2} & 3 \\\hline 4 & {\bf 2} \end{tabular} &
+\begin{tabular}{l|l} \textsl{{3}} & \textsl{{3}} \\\hline \textsl{{3}} & 
+\textsl{{3}} \end{tabular} \\\hline\hline
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Cada célula da matriz de Levenshtein}
+
+\bigskip
+
+\begin{tabular}{|l|l|}
+
+\hline
+\parbox{4cm}{Custo de chegar aqui a partir do meu vizinho superior 
+esquerdo (cópia or substituição)} &
+\parbox{4cm}{Custo de chegar aqui a partir do meu vizinho superior 
+(deleção)}\\\hline
+\parbox{4cm}{Custo de chegar aqui a partir do meu vizinho esquerdo (inserção)} &
+\parbox{4cm}{mínimo dos três ``movimentos'' possíveis; a forma mais barata de 
+chegar aqui
+} \\\hline
+
+\end{tabular}
+
+\end{frame}
+
+\againframe<2>{lmatrix}
+
 \end{document}

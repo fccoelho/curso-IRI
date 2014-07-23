@@ -354,12 +354,85 @@ permuterm \myblue{tree}.
 \end{frame}
 
 \begin{frame}
-\frametitle{Processing a lookup in the permuterm index}
+\frametitle{Processando um acesso ao índice permuterm }
 \begin{itemize}[<+->]
-\item Rotate query wildcard to the right
-\item Use B-tree lookup as before
-\item Problem: Permuterm more than \myblue{quadruples} the size of the
-  dictionary compared to a regular B-tree. (empirical number)
+\item Rotacione a consulta coringa para a direita
+\item Use o acesso à árvore B como descrito anteriormente
+\item Problema: O Permuterm mais do que {\color{blue} quadruplica} 
+o tamanho do dicionário quando comparado a uma árvore B regular. 
+(observação empírica)
+\end{itemize}
+\end{frame}
+
+\section{Distância de Edição}
+
+\begin{frame}[<+->]
+\frametitle{Correção ortográfica}
+\pause[2]
+\begin{itemize}
+\item Dois usos principais
+\begin{itemize}
+\item Correção de documentos a serem indexados
+\item Correção de consultas
+\end{itemize}
+\item Dois métodos diferentes para correção ortográfica
+\item Correção de {\color{blue} Palavra isolada} 
+\begin{itemize}
+\item Verifica cada palavra isoladamente quanto à correção 
+ortográfica
+\item Não ``pega'' erros que resultam em palavras corretas, p.ex., \emph{an 
+asteroid that fell {\color{blue} form} the sky}
+\end{itemize}
+\item Correção ortográfica {\color{blue} contextual} 
+\begin{itemize}
+\item Olha para as palavras vizinhas
+\item Pode corrigir o erro \emph{form}/\emph{from} acima
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Corrigindo documentos}
+\pause[2]
+\begin{itemize}
+\item Não estamos interessados em correção interativa de documentos
+(p.ex., MS Word) neste curso.
+\item Em RI, Usamos a correção de documentos primariamente para documentos 
+OCR-izados. (OCR = optical character recognition)
+\item A filosofia geral em RI é: Não altere os documentos.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Correcting queries}
+\pause[2]
+\begin{itemize}
+\item First: isolated word spelling correction
+\item Premise 1: There is a list of ``correct words'' from
+  which the correct spellings come.
+\item Premise 2: We have a way of computing the
+  \myblue{distance} between a misspelled word and a correct
+  word.
+\item Simple spelling correction algorithm: return the
+  ``correct'' word that has the smallest distance to the
+  misspelled word.
+\item Example: \emph{informaton} $\rightarrow$ \emph{information}
+\item For the list of correct words, we can use the vocabulary of all words that 
+occur in
+  our collection.
+\item \mygreen{Why is this problematic?} 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]
+\frametitle{Alternatives to using the term vocabulary}
+\pause[2]
+\begin{itemize}
+\item A standard dictionary (Webster's, OED etc.)
+\item An industry-specific dictionary (for
+  specialized IR systems)
+\item The term vocabulary of the collection,
+  appropriately weighted
 \end{itemize}
 \end{frame}
 
