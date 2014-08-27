@@ -2851,38 +2851,22 @@ que devem consistir de uma letra seguida por três dígitos.
 \begin{itemize}
 \item Não muito -- Para recuperação de informação
 \item Ok para tarefas que requerem ``alta revocação'' em outros tipos de 
-aplicação  (p.ex., Interpol)
-\item Zobel and Dart (1996) suggest better alternatives for
-  phonetic matching in IR.
+aplicação  (p. ex., Interpol)
+\item Zobel e Dart (1996) sugerem alternativas melhores para correspondência 
+onética em RI.
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Exercise}
+\frametitle{Exercício}
 \begin{itemize}
-\item \mygreen{Compute Soundex code of your last name}
+\item {\color{green} Compute o código Soundex do seu último nome}
 \end{itemize}
 \end{frame}
 
-\againframe<6>{takeaway}
+\againframe<6>{Resumo}
 
-\begin{frame}
-\frametitle{Resources}
-\begin{itemize}
-\item Chapter 3 of IIR
-\item Resources at
-  \url{http://ifnlp.org/ir}
-\begin{itemize}
-\item trie vs hash vs ternary tree
-\item Soundex demo
-\item Edit distance demo
-\item Peter Norvig's spelling corrector
-\item Google: wild card search, spelling correction gone
-  wrong, a misspelling that is more frequent that the
-  correct spelling
-\end{itemize}
-\end{itemize}
-\end{frame}
+
 
 
 \end{document}
