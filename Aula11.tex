@@ -7,7 +7,7 @@
 \ifxetex
 \usepackage{xltxtra}
 \usepackage{polyglossia}
-\setdefaultlanguage[⟨options⟩]{brazil}
+\setdefaultlanguage[⟨options⟩]{portuguese}
 \usepackage{fontspec,lipsum}
 \defaultfontfeatures{Ligatures=TeX}
 %\setromanfont{Georgia}
@@ -154,9 +154,10 @@ IRI 11: Recuperação de Informação Probabilística}
 %\pause[2]
 \begin{itemize}
 \item Tesauro manual (mantido por editores, p.ex., PubMed)
-\item Tesauro derivado automaticamente (p.ex., baseado em estatísticas de co-ocurrence statistics)
-\item Query-equivalence based on query log mining (common on
-  the web as in the ``palm'' example)
+\item Tesauro derivado automaticamente (p.ex., baseado em estatísticas de 
+co-ocorr\^encia)
+\item Consultas equivalentes baseadas na minera\c{c}\~ao do hist\'orico de 
+consultas)
 \end{itemize}
 \end{frame}
 
@@ -627,7 +628,9 @@ O(R|\vec{x},\vec{q}) = O(R|\vec{q}) \cdot
 \end{equation}
 
 \begin{itemize}
-\item O produto da esquerda continua a ser so bre os termos encontrados no documento, mas o da direita agora é sobre todos os termos de consulta, que é contante para uma dada consulta e pode ser ignorado. 
+\item O produto da esquerda continua a ser sobre os termos encontrados no 
+documento, mas o da direita agora é sobre todos os termos de consulta, que é 
+constante para uma dada consulta e pode ser ignorado. 
 
 \item $\rightarrow$ \myblue{A única quantidade que precisa ser estimada para rankear documentos com respeito a uma consulta, é o produto da esquerda} 
 
@@ -866,11 +869,12 @@ RSV_d = \sum_{t \in q} \log\frac{N}{\docf_t}
 \begin{equation}
 \nonumber
 RSV_d = \sum_{t \in q} \log\left[\frac{N}{\docf_t}\right]\cdot
-\frac{(k_1 + 1)\termf_{td}}
-{k_1 ((1-b) + b\times (L_d/\dlenave)) + \termf_{td}} 
+\frac{(k_1 + 1)tf_{td}}
+{k_1 ((1-b) + b\times (L_d/L_{med})) + tf_{td}} 
 \end{equation}
-\item $\termf_{td}$: Frequência do termo no documento $d$
-\item $L_d$ ($\dlenave$): Comprimento do documento $d$ (Comprimento médio dos documentos na coleção inteira)
+\item $tf_{td}$: Frequência do termo no documento $d$
+\item $L_d$ ($L_{med}$): Comprimento do documento $d$ (Comprimento médio dos 
+documentos na coleção inteira)
 \item $k_1$: Parâmetro de ajuste controlando a imfluência da frequencia do termo
 \item $b$: Parâmetro de ajuste controlando a influência do comprimento do documento 
 \end{itemize}
@@ -904,12 +908,12 @@ RSV_d = \sum_{t \in q} \log\left[\frac{N}{\docf_t}\right]\cdot
 \nonumber
 RSV_d = \sum_{t\in q} \left[\log\frac{N}{\docf_t}\right]
 \cdot
-\frac{(k_1+1)\termf_{td}}{k_1((1-b) + b \times (L_d/\dlenave))+\termf_{td}}
+\frac{(k_1+1)tf_{td}}{k_1((1-b) + b \times (L_d/L_{med}))+tf_{td}}
 \cdot
-\frac{(k_3 + 1)\termf_{tq}}{k_3 + \termf_{tq}} \label{bm25-3}
+\frac{(k_3 + 1)tf_{tq}}{k_3 + tf_{tq}} \label{bm25-3}
 \end{equation}
 \begin{itemize}
-\item $\termf_{tq}$: frequência do termo na consulta $q$
+\item $tf_{tq}$: frequência do termo na consulta $q$
 \item $k_3$: parâmetro de ajuste controlando a importância frequência do termo na consulta
 
 \item Não há normalização de comprimento para consultas (pois a recuperação é feita com respeito a uma única consulta fixa)
