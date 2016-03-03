@@ -1,7 +1,7 @@
 curso-IRI
 =========
 
-Introdução à Recuperação de Informações
+Introdução à Recuperação de Informações.
 
 Ipython Notebooks
 --------
@@ -15,3 +15,7 @@ Ipython Notebooks
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/fccoelho/curso-iri/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
+Livro de referência:
+--------------------
+
+* [Introduction to Information Retrieval](http://nlp.stanford.edu/IR-book/)
