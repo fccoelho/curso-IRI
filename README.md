@@ -13,7 +13,8 @@ Ipython Notebooks
 * [SRI-01](http://nbviewer.ipython.org/github/fccoelho/curso-IRI/blob/master/SRI-01.ipynb)
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/fccoelho/curso-iri/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+## Lista dos trabalhos 2017
+[Documento no hackmd](https://hackmd.io/JwVgJgRgxgLAzFAtARgEwQGaJsOAGRCGAdgLwzmmRgFNlka8g===)
 
 Livro de referência:
 --------------------
