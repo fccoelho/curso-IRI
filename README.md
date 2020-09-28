@@ -11,7 +11,7 @@ Introdução à Sistemas Recuperação de Informações.
 
 ### Tópico 2: Utilizando Indices Invertidos
  - [Slides](https://github.com/fccoelho/curso-IRI/blob/master/Aula02.pdf)
- - [Jupyter Notebook](https://github.com/fccoelho/curso-IRI/blob/master/Pratica1.ipynb)
+ - [Jupyter Notebook](https://github.com/fccoelho/curso-IRI/blob/master/Usando%20o%20Whoosh.ipynb)
  - [Exercícios](https://github.com/fccoelho/curso-IRI/blob/master/Lista%20de%20Exercicios-1.ipynb): Consultas avançadas.
 
 ### Tópico 3: Recuperação Tolerante
