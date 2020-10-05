@@ -42,6 +42,13 @@ Introdução à Sistemas Recuperação de Informações.
 
 -------------------------
 
+## Corpora interessantes para uso no curso
+1. [Wikileaks](https://archive.org/details/wikileaks-cables-csv) Telegramas "vazados" pelo wikileaks. Ver também [notebook](https://github.com/fccoelho/curso-IRI/blob/master/Wikileaks_ElasticSearch.ipynb).
+2. Dicionário Histórico e Biográfico Brasileiro - [DHBB](https://github.com/cpdoc/dhbb). Ver [notebook](https://github.com/fccoelho/text-mining-cientistas-sociais/blob/master/Capitulo_1.ipynb)
+3. Wikipedia. veja este [notebook](https://github.com/Tanu-N-Prabhu/Python/blob/master/Wikipedia_API_for_Python.ipynb)
+4. [Blogs brasileiros](https://www.inf.pucrs.br/linatural/wordpress/recursos-e-ferramentas/blogset-br/).
+5. Corpora do Tensorflow. Veja [lista](https://www.tensorflow.org/datasets/catalog/overview#text).
+--------------
 
 ## Lista dos trabalhos 2020
 [Documento no hackmd](https://hackmd.io/JwVgJgRgxgLAzFAtARgEwQGaJsOAGRCGAdgLwzmmRgFNlka8g===)
