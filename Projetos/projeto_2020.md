@@ -1,4 +1,4 @@
-# Projeto Final 2019
+# Projeto Final 2020
 Neste projeto cada aluno deve eleger um corpus de documentos de tamanho medio (pelo menos milhares de documentos). Todas as tarefas a seguir serao realizadas sobre este corpus.
 
 ## Indexaçao
