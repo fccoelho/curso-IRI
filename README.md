@@ -17,7 +17,7 @@ Introdução à Sistemas Recuperação de Informações.
 ### Tópico 3: Recuperação Tolerante
  - [Slides](https://github.com/fccoelho/curso-IRI/blob/master/Aula03.pdf)
  - [Jupyter Notebook](https://github.com/fccoelho/curso-IRI/blob/master/Pratica1.ipynb)
- - [Exercícios]()
+ - [Exercícios](https://github.com/fccoelho/curso-IRI/blob/master/Lista%20de%20Exercicios-2.ipynb)
 
 ### Tópico 4: Modelo Vetorial
  - [Slides](https://github.com/fccoelho/curso-IRI/blob/master/Aula06.pdf)
