@@ -18,7 +18,7 @@
 \usepackage[portuguese]{babel}
 \fi
 \usepackage{url}
-\usepackage{default}
+% \usepackage{default}
 \usepackage{xcolor}
 \usepackage{newalg}
 \usepackage{pstricks,pst-node,pst-plot,pst-tree}
@@ -60,7 +60,7 @@
 \large \url{https://github.com/fccoelho/curso-IRI}\\[0.5cm]
 IRI 11: Recuperação de Informação Probabilística}
 
-\author [Coelho F.C. \& Souza R.R.]{ Flávio Codeço Coelho}
+\author [Coelho F.C. and Souza R.R.]{ Flávio Codeço Coelho}
 
 \institute [EMAp, FGV]{Escola de Matemática Aplicada,   Fundação Getúlio Vargas}
 \date
@@ -93,13 +93,9 @@ IRI 11: Recuperação de Informação Probabilística}
 
 \frame{
 \frametitle{Rocchio}
-
 \psset{unit=0.175cm}
-
-
 \begin{pspicture}(5,5)(45,36)
 \psaxes[labels=none,ticks=none,arrowscale=3,linewidth=0.02cm]{->}(15,10)(45,36)
-
 %\showgrid
 %\psgrid[subgriddiv=0](0,2)(55,36)
 
@@ -143,15 +139,12 @@ IRI 11: Recuperação de Informação Probabilística}
 \psline{->,arrowscale=2,linewidth=0.03cm}(15,10)(20,20)
 \rput(20,22){\small $\vec{q}_{opt}$}
 }
-
 \end{pspicture}
-
 }
 
 
 \begin{frame}
 \frametitle{Tipos de expansão de consulta}
-%\pause[2]
 \begin{itemize}
 \item Tesauro manual (mantido por editores, p.ex., PubMed)
 \item Tesauro derivado automaticamente (p.ex., baseado em estatísticas de 
@@ -185,7 +178,6 @@ Usuários buscando por [desenhos de flor]
 
 
 \begin{frame}[Conclusão de Hoje]
-
 \frametitle{Conclusão de Hoje}
 \begin{itemize}
 \item Abordagem probabilistica a RI
@@ -200,11 +192,8 @@ Usuários buscando por [desenhos de flor]
 \frametitle{Feedback de Relevância}
 \pause[2]
 \begin{itemize}
-
 \item No feedback de relevância, o usuário marca documentos como relevantes ou irrelevantes
-
 \item Dados alguns documentos conhecidos como relevantes e irrelevantes, computamos pesos para termos que não constam da consulta e que indicam quão provável é a sua ocorrência em documentos relevantes.
-
 \item Hoje: desenvolver uma abordagem probabilística para relevância e também um modelo probabilístico genérico para RI
 \end{itemize}
 \end{frame}
@@ -683,16 +672,16 @@ os odds do termo aparecer se o documento for irrelevante ($u_t/(1-u_t)$) %The \m
 \frametitle{Como Estimar Probabilidades}
 \pause[2]
 
-para cada termo $t$ em uma consulta, estimamos $c_t$ em toda a coleção usando uma tabela de contingência de contagens de documentos na coleção onde $\docf_t$ 'e o número de documentos que contem o termo $t$:
-%
+para cada termo $t$ em uma consulta, estimamos $c_t$ em toda a coleção usando uma tabela de contingência de contagens de documentos na coleção onde $Df_t$ é o número de documentos que contem o termo $t$:
+\begin{small}                                  
 \begin{tabular}[t]{|cc|cc|c|}
 \hline
              & documentos & relevante & irrelevante & Total \\ \hline
-Termo presente & $x_t = 1$ & $s$ & $\docf_t-s$ & $\docf_t$ \\
-Termo ausente & $x_t = 0$ & $S-s$ & $(N-\docf_t)-(S-s)$ & $N-\docf_t$ \\ \hline
+Termo presente & $x_t = 1$ & $s$ & $Df_t-s$ & $Df_t$ \\
+Termo ausente & $x_t = 0$ & $S-s$ & $(N-Df_t)-(S-s)$ & $N-Df_t$ \\ \hline
              & Total & $S$ & $N-S$ & $N$ \\ \hline
 \end{tabular}
-
+\end{small}
 %
 \begin{equation}
 \nonumber
@@ -700,11 +689,11 @@ Termo ausente & $x_t = 0$ & $S-s$ & $(N-\docf_t)-(S-s)$ & $N-\docf_t$ \\ \hline
 \end{equation}
 \begin{equation}
 \nonumber
-u_t = (\docf_t-s)/(N-S) 
+u_t = (Df_t-s)/(N-S) 
 \end{equation}
 \begin{equation}
 \nonumber
-c_t = K(N,\docf_t,S,s) = \log\frac{s/(S-s)}{(\docf_t-s)/((N-\docf_t)-(S-s))}  
+c_t = K(N,Df_t,S,s) = \log\frac{s/(S-s)}{(Df_t-s)/((N-Df_t)-(S-s))}  
 \end{equation}
 
 
@@ -744,10 +733,10 @@ Estime a probabilidade de que os documentos acima são relevantes para a consult
 
 \begin{itemize}\item Assumindo que documentos relevantes são uma fração bem pequena da coleção, aproxime estatísticas para documentos irrelevantes a partir de estatísticas da coleção completa
 
-\item Por conseguinte, $u_t$ (a probabilidade de ocorrência do termo em documentos irrelevantes para uma dada consulta) é $\docf_t/N$ e
+\item Por conseguinte, $u_t$ (a probabilidade de ocorrência do termo em documentos irrelevantes para uma dada consulta) é $Df_t/N$ e
 \begin{equation}
 \nonumber
-\log [(1-u_t)/u_t] = \log [(N-\docf_t)/\docf_t] \approx \log N/\docf_t 
+\log [(1-u_t)/u_t] = \log [(N-Df_t)/Df_t] \approx \log N/Df_t 
 \end{equation}
 
 \item Esta equação deve parecer familiar \ldots
@@ -789,7 +778,7 @@ Estime a probabilidade de que os documentos acima são relevantes para a consult
 \end{itemize}
 \end{frame}
 
-\section{Conclusão&Extensões}
+\section{Conclusão e Extensões}
 \begin{frame}[<+->]
 \frametitle{História e sumário dos pressupostos}
 \pause[2]
@@ -855,7 +844,7 @@ Estime a probabilidade de que os documentos acima são relevantes para a consult
 \pause
 \begin{equation}
 \nonumber
-RSV_d = \sum_{t \in q} \log\frac{N}{\docf_t}
+RSV_d = \sum_{t \in q} \log\frac{N}{Df_t}
 \end{equation}
 
 \end{frame}
@@ -868,7 +857,7 @@ RSV_d = \sum_{t \in q} \log\frac{N}{\docf_t}
 \item Melhora o idf do termo [log N/df] através da inclusão da frequência do termo e do comprimento do documento.
 \begin{equation}
 \nonumber
-RSV_d = \sum_{t \in q} \log\left[\frac{N}{\docf_t}\right]\cdot
+RSV_d = \sum_{t \in q} \log\left[\frac{N}{Df_t}\right]\cdot
 \frac{(k_1 + 1)tf_{td}}
 {k_1 ((1-b) + b\times (L_d/L_{med})) + tf_{td}} 
 \end{equation}
@@ -906,7 +895,7 @@ documentos na coleção inteira)
 
 \begin{equation}
 \nonumber
-RSV_d = \sum_{t\in q} \left[\log\frac{N}{\docf_t}\right]
+RSV_d = \sum_{t\in q} \left[\log\frac{N}{Df_t}\right]
 \cdot
 \frac{(k_1+1)tf_{td}}{k_1((1-b) + b \times (L_d/L_{med}))+tf_{td}}
 \cdot
